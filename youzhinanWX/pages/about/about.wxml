@@ -1,0 +1,69 @@
+<view class="about-container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar" style="height: {{expandedNavBarHeight}}px;">
+    <view class="nav-left" bindtap="goBack">
+      <text class="nav-back-icon">〈</text>
+    </view>
+    <view class="nav-title">关于我们</view>
+    <view class="nav-right"></view>
+  </view>
+
+  <scroll-view class="content" scroll-y="true" style="padding-top: {{expandedNavBarHeight}}px;">
+    <!-- 切换按钮区域 -->
+    <view class="tab-container">
+      <view class="tab-btn {{currentTab === 'usage' ? 'active' : ''}}" bindtap="switchTab" data-tab="usage">
+        使用说明
+      </view>
+      <view class="tab-btn {{currentTab === 'protocol' ? 'active' : ''}}" bindtap="switchTab" data-tab="protocol">
+        用户协议
+      </view>
+    </view>
+
+    <!-- 加载中状态 -->
+    <view wx:if="{{loading}}" class="loading-container">
+      <text>加载中...</text>
+    </view>
+
+    <!-- 错误状态 -->
+    <view wx:elif="{{error}}" class="error-container">
+      <text>加载失败，请重试</text>
+      <button bindtap="loadAboutContent">重试</button>
+    </view>
+
+    <!-- 用户协议区域 -->
+    <view wx:elif="{{currentTab === 'protocol' && tabClicked}}" class="protocol-section">
+      <text class="protocol-title">{{aboutData.protocolTitle}}</text>
+      
+      <view class="protocol-content">
+        <view wx:for="{{aboutData.protocolContent}}" wx:key="index">
+          <text class="content-h1" wx:if="{{item.type === 'h1'}}">{{item.content}}</text>
+          <text class="content-h2" wx:elif="{{item.type === 'h2'}}">{{item.content}}</text>
+          <view class="content-list" wx:elif="{{item.type === 'list'}}">
+            <text class="list-bullet">•</text>
+            <text class="list-content">{{item.content}}</text>
+          </view>
+          <text class="content-p" wx:elif="{{item.type === 'p'}}">{{item.content}}</text>
+          <view class="content-br" wx:elif="{{item.type === 'br'}}"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 使用说明区域 -->
+    <view wx:elif="{{currentTab === 'usage' && tabClicked}}" class="usage-section">
+      <text class="usage-title">{{aboutData.usageTitle}}</text>
+      
+      <view class="usage-content">
+        <view wx:for="{{aboutData.usageContent}}" wx:key="index">
+          <text class="content-h1" wx:if="{{item.type === 'h1'}}">{{item.content}}</text>
+          <text class="content-h2" wx:elif="{{item.type === 'h2'}}">{{item.content}}</text>
+          <view class="content-list" wx:elif="{{item.type === 'list'}}">
+            <text class="list-bullet">•</text>
+            <text class="list-content">{{item.content}}</text>
+          </view>
+          <text class="content-p" wx:elif="{{item.type === 'p'}}">{{item.content}}</text>
+          <view class="content-br" wx:elif="{{item.type === 'br'}}"></view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

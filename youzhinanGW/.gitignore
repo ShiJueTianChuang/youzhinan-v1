@@ -1,0 +1,15 @@
+# APK 下载文件（体积大，不提交到仓库）
+downloads/
+
+# 日志
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,86 @@
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-left" bindtap="goBack">
+      <text class="nav-back-icon">〈</text>
+    </view>
+    <view class="nav-title">用户管理</view>
+    <view class="nav-right"></view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input 
+      class="search-input" 
+      type="text" 
+      placeholder="搜索用户" 
+      value="{{searchKeyword}}"
+      bindinput="onSearchInput"
+      bindconfirm="onSearchConfirm"
+    />
+    <button class="search-btn" bindtap="onSearchConfirm">搜索</button>
+  </view>
+
+  <!-- 用户列表 -->
+  <scroll-view class="user-list" scroll-y="true">
+    <view wx:if="{{users.length === 0}}" class="empty-list">
+      <text class="empty-text">{{loading ? '加载中...' : '暂无用户数据'}}</text>
+    </view>
+    <view wx:else>
+      <view class="user-item" wx:for="{{users}}" wx:key="id">
+        <view class="user-info">
+          <view class="user-name">{{item.nick_name || '未知用户'}}<text class="admin-tag" wx:if="{{item.is_admin}}">管理员</text></view>
+          <view class="user-details">
+            <text class="user-detail-item">账号: {{item.username}}</text>
+            <text class="user-detail-item">OpenID: {{item.openid}}</text>
+          </view>
+        </view>
+        <view class="user-actions">
+          <button class="action-btn edit-btn" bindtap="editUser" data-user="{{item}}">编辑</button>
+          <button class="action-btn delete-btn" bindtap="deleteUser" data-id="{{item.id}}">删除</button>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 编辑用户弹窗 -->
+<view class="modal-mask" wx:if="{{showEditModal}}">
+  <view class="modal-container" catchtap="preventEvent">
+    <view class="modal-header">
+      <text class="modal-title">编辑用户</text>
+      <text class="modal-close" bindtap="closeEditModal">✕</text>
+    </view>
+    <view class="modal-body">
+      <view class="form-item">
+        <text class="item-label">昵称</text>
+        <input 
+          class="item-input" 
+          type="text" 
+          value="{{editUserInfo.nick_name}}"
+          bindinput="onNickNameInput"
+        />
+      </view>
+      <view class="form-item">
+        <text class="item-label">账号</text>
+        <input 
+          class="item-input" 
+          type="text" 
+          value="{{editUserInfo.username}}"
+          bindinput="onUserNameInput"
+        />
+      </view>
+      <view class="form-item">
+        <text class="item-label">管理员</text>
+        <switch 
+          checked="{{editUserInfo.is_admin}}"
+          bindchange="onAdminChange"
+        />
+      </view>
+    </view>
+    <view class="modal-actions">
+      <button class="modal-btn cancel-btn" bindtap="closeEditModal">取消</button>
+      <button class="modal-btn confirm-btn" bindtap="confirmEdit">保存</button>
+    </view>
+  </view>
+</view>

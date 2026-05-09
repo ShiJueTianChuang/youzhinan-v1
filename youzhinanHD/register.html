@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 信息管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .register-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input.error {
+            border-color: #f44336;
+        }
+
+        .form-group input.success {
+            border-color: #4CAF50;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .toast.error {
+            background: rgba(244, 67, 54, 0.9);
+        }
+
+        .toast.success {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .resend-link {
+            text-align: right;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .resend-link a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .resend-link a:hover {
+            text-decoration: underline;
+        }
+
+        .resend-link a.disabled {
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .resend-link a.disabled:hover {
+            text-decoration: none;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            line-height: 1.6;
+        }
+
+        .password-requirements ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 5px 0 0 0;
+        }
+
+        .password-requirements li {
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .password-requirements li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast"></div>
+
+    <div class="register-container">
+        <div class="register-header">
+            <h1>创建账号</h1>
+            <p>注册信息管理系统</p>
+        </div>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="email">邮箱地址</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="请输入邮箱地址"
+                    required
+                >
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="nickName">昵称（可选）</label>
+                <input 
+                    type="text" 
+                    id="nickName" 
+                    name="nickName" 
+                    placeholder="请输入昵称"
+                >
+                <div class="error-message" id="nickNameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="请输入密码"
+                    required
+                >
+                <div class="error-message" id="passwordError"></div>
+                <div class="password-requirements">
+                    密码要求：
+                    <ul>
+                        <li>至少 8 位字符</li>
+                        <li>包含小写字母</li>
+                        <li>包含大写字母</li>
+                        <li>包含数字</li>
+                        <li>包含特殊字符 (!@#$%^&*等)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">确认密码</label>
+                <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    placeholder="请再次输入密码"
+                    required
+                >
+                <div class="error-message" id="confirmPasswordError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="code">验证码</label>
+                <input 
+                    type="text" 
+                    id="code" 
+                    name="code" 
+                    placeholder="请输入 6 位验证码"
+                    maxlength="6"
+                    required
+                >
+                <div class="error-message" id="codeError"></div>
+                <div class="resend-link" id="resendLink">
+                    <a onclick="sendVerificationCode()">发送验证码</a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="registerBtn">
+                立即注册
+            </button>
+
+            <div class="login-link">
+                已有账号？<a href="login.html">立即登录</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://your-domain.com/api';
+        let countdown = 0;
+        let countdownInterval = null;
+        let emailVerified = false;
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+
+        function showError(fieldId, message) {
+            const errorEl = document.getElementById(fieldId + 'Error');
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+            document.getElementById(fieldId).classList.add('error');
+        }
+
+        function showSuccess(fieldId) {
+            const errorEl = document.getElementById(fieldId + 'Error');
+            errorEl.classList.remove('show');
+            document.getElementById(fieldId).classList.add('success');
+        }
+
+        function clearError(fieldId) {
+            const errorEl = document.getElementById(fieldId + 'Error');
+            errorEl.classList.remove('show');
+            document.getElementById(fieldId).classList.remove('error');
+            document.getElementById(fieldId).classList.remove('success');
+        }
+
+        function clearAllErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.classList.remove('show');
+            });
+            document.querySelectorAll('.form-group input').forEach(el => {
+                el.classList.remove('error', 'success');
+            });
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email);
+        }
+
+        function validatePasswordComplexity(password) {
+            if (!password || password.length < 8) {
+                return { valid: false, message: '密码长度至少 8 位' };
+            }
+            if (!/[a-z]/.test(password)) {
+                return { valid: false, message: '密码必须包含小写字母' };
+            }
+            if (!/[A-Z]/.test(password)) {
+                return { valid: false, message: '密码必须包含大写字母' };
+            }
+            if (!/[0-9]/.test(password)) {
+                return { valid: false, message: '密码必须包含数字' };
+            }
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                return { valid: false, message: '密码必须包含特殊字符' };
+            }
+            return { valid: true };
+        }
+
+        function startCountdown() {
+            const resendLink = document.getElementById('resendLink');
+            resendLink.innerHTML = `<span class="disabled">${countdown}秒后重新发送</span>`;
+            
+            countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    resendLink.innerHTML = '<a onclick="sendVerificationCode()">发送验证码</a>';
+                } else {
+                    resendLink.innerHTML = `<span class="disabled">${countdown}秒后重新发送</span>`;
+                }
+            }, 1000);
+        }
+
+        async function sendVerificationCode() {
+            if (countdown > 0) {
+                showToast(`请等待${countdown}秒后再发送`, 'error');
+                return;
+            }
+
+            clearAllErrors();
+
+            const email = document.getElementById('email').value.trim();
+
+            if (!email) {
+                showError('email', '请输入邮箱地址');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showError('email', '请输入有效的邮箱地址');
+                return;
+            }
+
+            const link = document.getElementById('resendLink');
+            link.innerHTML = '<span class="loading"></span>发送中...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/email-auth/send-code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        type: 'register'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    showToast('验证码已发送，请查收邮件', 'success');
+                    showSuccess('email');
+                    emailVerified = true;
+                    countdown = 60;
+                    startCountdown();
+                } else {
+                    showToast(result.message || '发送失败', 'error');
+                    const link = document.getElementById('resendLink');
+                    link.innerHTML = '<a onclick="sendVerificationCode()">发送验证码</a>';
+                }
+            } catch (error) {
+                console.error('发送验证码错误:', error);
+                showToast('网络错误，请稍后重试', 'error');
+                const link = document.getElementById('resendLink');
+                link.innerHTML = '<a onclick="sendVerificationCode()">发送验证码</a>';
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAllErrors();
+
+            const email = document.getElementById('email').value.trim();
+            const nickName = document.getElementById('nickName').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const code = document.getElementById('code').value.trim();
+
+            if (!email) {
+                showError('email', '请输入邮箱地址');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showError('email', '请输入有效的邮箱地址');
+                return;
+            }
+
+            if (!password) {
+                showError('password', '请输入密码');
+                return;
+            }
+
+            const passwordCheck = validatePasswordComplexity(password);
+            if (!passwordCheck.valid) {
+                showError('password', passwordCheck.message);
+                return;
+            }
+
+            if (!confirmPassword) {
+                showError('confirmPassword', '请确认密码');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('confirmPassword', '两次输入的密码不一致');
+                return;
+            }
+
+            if (!code) {
+                showError('code', '请输入验证码');
+                return;
+            }
+
+            if (code.length !== 6) {
+                showError('code', '验证码为 6 位数字');
+                return;
+            }
+
+            const btn = document.getElementById('registerBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>注册中...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/email-auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        code: code,
+                        nick_name: nickName || undefined
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    showToast('注册成功！', 'success');
+                    
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('userInfo', JSON.stringify(result.data.userInfo));
+
+                    // 基于角色的智能重定向
+                    setTimeout(() => {
+                        const userInfo = result.data.userInfo;
+                        const isAdmin = userInfo.isAdmin || userInfo.is_admin || false;
+                        
+                        if (isAdmin) {
+                            // 管理员显示确认对话框
+                            const goToAdmin = confirm('欢迎管理员！是否进入后端管理系统？\n\n点击"确定"进入管理系统\n点击"取消"进入前端首页');
+                            window.location.href = goToAdmin ? 'index.html' : 'home.html';
+                        } else {
+                            // 新用户进入前端首页
+                            window.location.href = 'home.html';
+                        }
+                    }, 1000);
+                } else {
+                    showToast(result.message || '注册失败', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '立即注册';
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                showToast('网络错误，请稍后重试', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '立即注册';
+            }
+        });
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                clearError(this.id);
+            });
+        });
+
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value.trim();
+            if (email && isValidEmail(email)) {
+                showSuccess('email');
+            }
+        });
+    </script>
+</body>
+</html>

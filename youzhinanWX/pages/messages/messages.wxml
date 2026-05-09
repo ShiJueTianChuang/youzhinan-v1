@@ -1,0 +1,76 @@
+<!-- 站内信页面 -->
+<view class="container">
+  <view class="nav-bar" style="height: {{expandedNavBarHeight}}px;">
+    <view class="nav-back-btn" bindtap="goBack">
+      <text class="back-icon">〈</text>
+    </view>
+    <view class="nav-title">我的消息</view>
+  </view>
+
+  <view class="main-content" style="margin-top: {{expandedNavBarHeight}}px;">
+    <!-- 系统通知 | 我的通知：左系统、右我的，与 currentTab / filterMessages 一致 -->
+    <view class="tabs">
+      <view class="tab {{currentTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-index="0">
+        <view class="tab-inner">
+          <text class="tab-text">系统通知</text>
+          <text class="tab-badge-num" wx:if="{{systemUnreadCount > 0}}">{{systemUnreadCount}}</text>
+        </view>
+      </view>
+      <view class="tab {{currentTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-index="1">
+        <view class="tab-inner">
+          <text class="tab-text">我的通知</text>
+          <text class="tab-badge-num" wx:if="{{personalUnreadCount > 0}}">{{personalUnreadCount}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="message-list" wx:if="{{messages.length > 0}}">
+      <view
+        class="message-item {{!item.is_read ? 'message-item--unread' : ''}}"
+        wx:for="{{messages}}"
+        wx:key="id"
+        bindtap="viewMessage"
+        data-id="{{item.id}}"
+        data-read="{{item.is_read}}"
+      >
+        <view class="message-item__meta">
+          <text class="message-tag {{(item.type === 'broadcast' || item.type === 'system') ? 'message-tag--system' : 'message-tag--personal'}}">
+            {{(item.type === 'broadcast' || item.type === 'system') ? '系统通知' : '私信'}}
+          </text>
+          <text class="message-time">{{item.created_at}}</text>
+        </view>
+        <view class="message-title">{{item.title}}</view>
+        <view class="message-excerpt">{{item.content}}</view>
+        <view class="unread-dot" wx:if="{{!item.is_read}}"></view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:else>
+      <text class="empty-text">暂无消息</text>
+    </view>
+  </view>
+</view>
+
+<!-- 消息详情弹窗：无收藏，仅展示 -->
+<view class="modal {{showModal ? 'show' : ''}}" catchtap="closeModal">
+  <view class="modal-content" catchtap="">
+    <view class="modal-header modal-header--detail">
+      <view class="modal-header__main">
+        <view class="modal-meta-row">
+          <text class="modal-tag {{(selectedMessage.type === 'broadcast' || selectedMessage.type === 'system') ? 'modal-tag--system' : 'modal-tag--personal'}}">
+            {{(selectedMessage.type === 'broadcast' || selectedMessage.type === 'system') ? '系统通知' : '私信'}}
+          </text>
+          <text class="modal-time-text">{{selectedMessage.created_at}}</text>
+        </view>
+        <view class="modal-detail-title">{{selectedMessage.title}}</view>
+      </view>
+      <view class="modal-close" bindtap="closeModal">×</view>
+    </view>
+    <view class="modal-body modal-body--detail">
+      <view class="modal-detail-content">{{selectedMessage.content}}</view>
+    </view>
+    <view class="modal-footer modal-footer--single">
+      <button class="btn btn-primary" bindtap="closeModal">知道了</button>
+    </view>
+  </view>
+</view>

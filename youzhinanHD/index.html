@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>信息后端管理系统</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 全屏登录页：未登录时独占整个页面 -->
+  <div id="login-page-screen" class="login-page-screen">
+    <div class="login-page-wrap">
+      <div class="login-page-card">
+        <div class="login-page-header">
+          <div class="login-page-logo">🔐</div>
+          <h1>信息管理系统</h1>
+          <p class="login-page-desc">有壹有伴小程序 · 有指南App 内部后端管理系统</p>
+          <p class="login-page-email">邮箱：<a href="mailto:weizhiahao@163.com">weizhiahao@163.com</a></p>
+        </div>
+        <form id="login-form" class="login-page-form">
+          <div class="login-page-field">
+            <label for="login-username">用户名</label>
+            <input type="text" id="login-username" name="username" placeholder="请输入用户名" required autocomplete="username">
+          </div>
+          <div class="login-page-field">
+            <label for="login-password">密码</label>
+            <input type="password" id="login-password" name="password" placeholder="请输入密码" required autocomplete="current-password">
+          </div>
+          <div id="login-error" class="login-page-error" style="display: none;"></div>
+          <button type="submit" class="login-page-btn">登 录</button>
+        </form>
+      </div>
+      <footer class="login-page-footer">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">豫ICP备2024070343号-2</a>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 后端主布局：登录后显示，默认隐藏 -->
+  <div id="backend-layout" class="backend-layout hidden">
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <nav class="main-nav">
+      <ul>
+        <li>
+          <a href="#" class="menu-item active" data-page="dashboard">
+            <span class="icon">📊</span>
+            <span class="text">仪表盘</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="all-info">
+            <span class="icon">📋</span>
+            <span class="text">所有信息</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="info-management">
+            <span class="icon">🔧</span>
+            <span class="text">信息管理</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="customer-service">
+            <span class="icon">💬</span>
+            <span class="text">客服管理</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="submission-review">
+            <span class="icon">📥</span>
+            <span class="text">投稿审核</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="user-management">
+            <span class="icon">👥</span>
+            <span class="text">用户管理</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="category-management">
+            <span class="icon">🏷️</span>
+            <span class="text">分类管理</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="image-library">
+            <span class="icon">🖼️</span>
+            <span class="text">图片库</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="menu-item" data-page="about-settings">
+            <span class="icon">ℹ️</span>
+            <span class="text">关于我们设置</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="lottery-management">
+            <span class="icon">🎁</span>
+            <span class="text">抽奖活动管理</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="shipping-management">
+            <span class="icon">📦</span>
+            <span class="text">收货地址管理</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="messages-management">
+            <span class="icon">📨</span>
+            <span class="text">站内信管理</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="menu-item" data-page="app-version">
+            <span class="icon">📱</span>
+            <span class="text">APP版本管理</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- 主内容区 -->
+  <main class="main-content">
+    <!-- 头部 -->
+    <header class="header">
+      <div class="header-top">
+        <h1>信息后端管理系统</h1>
+        <div class="user-info">
+          <input type="text" id="welcome-text" placeholder="欢迎，admin" readonly aria-label="欢迎信息" autocomplete="off">
+          <button id="refresh-page-btn" class="btn btn-secondary" title="刷新当前页">🔄</button>
+          <button id="logout-btn" class="btn btn-secondary">退出</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 页面内容 -->
+    <div class="pages-container">
+      <!-- 仪表盘页面 -->
+      <section id="dashboard" class="page active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👁️</div>
+            <div class="stat-info">
+              <div class="stat-number">0</div>
+              <div class="stat-label">总访问数</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">❤️</div>
+            <div class="stat-info">
+              <div class="stat-number">0</div>
+              <div class="stat-label">收藏人数</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👀</div>
+            <div class="stat-info">
+              <div class="stat-number">0</div>
+              <div class="stat-label">查看人数</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-section">
+          <h3>数据趋势</h3>
+          <div class="chart-container">
+            <canvas id="dataTrendChart"></canvas>
+          </div>
+        </div>
+        
+        <!-- 分类统计 -->
+        <div class="category-stats-section">
+          <h3>分类统计</h3>
+          <div class="category-stats-grid" id="category-stats-grid">
+            <!-- 分类统计卡片将通过JavaScript动态生成 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 所有信息页面 -->
+      <section id="all-info" class="page">
+        <div class="page-header">
+          <h2>所有信息</h2>
+          <div class="search-bar">
+            <label for="all-info-search" class="sr-only">搜索所有信息</label>
+            <input type="text" id="all-info-search" name="search" placeholder="搜索店名、省份、城市等" aria-label="搜索所有信息" autocomplete="off">
+            <button class="btn btn-secondary" id="all-info-search-btn">搜索</button>
+            <button class="btn btn-secondary" id="all-info-clear-btn">清空</button>
+          </div>
+        </div>
+        <div class="info-list">
+          <!-- 信息卡片将通过JavaScript动态生成 -->
+        </div>
+      </section>
+
+      <!-- 投稿审核页面 -->
+      <section id="submission-review" class="page">
+        <div class="page-header">
+          <h2>投稿审核</h2>
+          <div class="submission-stats" id="submission-stats">
+            <span class="stat-badge pending">待审核: 0</span>
+            <span class="stat-badge approved">已通过: 0</span>
+            <span class="stat-badge rejected">已拒绝: 0</span>
+          </div>
+          <div class="search-bar">
+            <select id="submission-status-filter" aria-label="筛选状态">
+              <option value="">全部</option>
+              <option value="pending" selected>待审核</option>
+              <option value="approved">已通过</option>
+              <option value="rejected">已拒绝</option>
+            </select>
+            <button class="btn btn-secondary" id="submission-refresh-btn">刷新</button>
+          </div>
+        </div>
+        <div class="submission-list" id="submission-list">
+          <!-- 投稿卡片将通过 JavaScript 动态生成 -->
+        </div>
+        <div class="pagination" id="submission-pagination"></div>
+      </section>
+
+      <!-- 信息管理页面 -->
+      <section id="info-management" class="page">
+        <div class="page-header">
+          <h2>信息管理</h2>
+          <div class="search-bar">
+            <label for="info-management-search" class="sr-only">搜索信息</label>
+            <input type="text" id="info-management-search" name="search" placeholder="搜索店名、省份、城市等" aria-label="搜索信息" autocomplete="off">
+            <button class="btn btn-secondary" id="search-info-btn">搜索</button>
+            <button class="btn btn-secondary" id="clear-search-btn">清空</button>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="add-info-btn">增加</button>
+            <button class="btn btn-danger" id="batch-delete-btn">批量删除</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="select-all" aria-label="全选"></th>
+                <th>序号</th>
+                <th>店名</th>
+                <th>分类</th>
+                <th>地址</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 行将通过JavaScript动态生成 -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 用户管理页面 -->
+      <section id="user-management" class="page">
+        <div class="page-header">
+          <h2>用户管理</h2>
+          <div class="search-box">
+            <label for="user-management-search" class="sr-only">搜索用户</label>
+            <input type="text" id="user-management-search" name="search" placeholder="搜索昵称/账号/手机/邮箱..." aria-label="搜索用户" autocomplete="off">
+            <select id="avatar-filter" name="avatar_filter" class="avatar-filter-select" aria-label="头像筛选">
+              <option value="all">全部用户</option>
+              <option value="with-avatar">有头像</option>
+              <option value="no-avatar">无头像</option>
+            </select>
+            <select id="source-filter" name="source_filter" class="source-filter-select" aria-label="用户来源筛选">
+              <option value="all">全部来源</option>
+              <option value="wechat">微信小程序</option>
+              <option value="app">APP</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="select-all-users" aria-label="选择全部用户" title="全选"></th>
+                <th>头像</th>
+                <th>昵称</th>
+                <th>账号</th>
+                <th>来源</th>
+                <th>openid/手机/邮箱</th>
+                <th>符号</th>
+                <th>积分</th>
+                <th>操作</th>
+                <th>等级</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 行将通过JavaScript动态生成 -->
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination user-management-pagination" style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap;">
+          <button type="button" id="user-prev-page" class="btn btn-secondary" disabled>上一页</button>
+          <button type="button" id="user-next-page" class="btn btn-secondary">下一页</button>
+          <span>第 <select id="user-page-select" style="padding:4px 8px;min-width:60px;"></select> 页 / 共 <span id="user-total-pages">1</span> 页</span>
+          <span>共 <span id="user-total-count">0</span> 人</span>
+        </div>
+      </section>
+
+      <!-- 分类管理页面 -->
+      <section id="category-management" class="page">
+        <div class="page-header">
+          <h2>分类管理</h2>
+          <div class="page-actions">
+            <button id="add-category-btn" class="btn btn-primary">新增分类</button>
+          </div>
+        </div>
+        <div class="category-list" id="category-list">
+          <!-- 分类列表将通过JavaScript动态生成 -->
+        </div>
+      </section>
+
+      <!-- 图片库页面 -->
+      <section id="image-library" class="page">
+        <div class="page-header">
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <h2>图片库</h2>
+            <div class="batch-select-controls">
+              <label class="checkbox-label">
+                <input type="checkbox" id="select-all-images" class="select-all-checkbox">
+                <span>全选</span>
+              </label>
+              <button id="batch-delete-images-btn" class="btn btn-danger" disabled>批量删除</button>
+            </div>
+          </div>
+          <div class="page-actions">
+            <button id="upload-image-btn" class="btn btn-primary">上传图片</button>
+            <button id="refresh-images-btn" class="btn btn-secondary">刷新</button>
+          </div>
+        </div>
+        <!-- 确保文件输入框始终存在，不被隐藏区域影响 -->
+        <input type="file" id="image-upload" multiple accept="image/*" style="position: absolute; top: -9999px; left: -9999px;">
+        
+        <!-- 隐藏默认上传区域，只保留图片样式的上传框 -->
+        <div class="image-upload-section" style="display: none;">
+          <div class="upload-area">
+            <div class="upload-placeholder" id="upload-placeholder">
+              <div class="upload-icon">🖼️</div>
+              <div class="upload-text">点击或拖拽图片到此处上传</div>
+              <div class="upload-hint">支持JPG、PNG、GIF格式，单张不超过10MB</div>
+            </div>
+            <div class="upload-progress" id="upload-progress">
+              <div class="upload-progress-bar" id="upload-progress-bar"></div>
+            </div>
+            <div class="upload-status" id="upload-status"></div>
+          </div>
+        </div>
+        <div class="image-list" id="image-list">
+          <!-- 图片列表将通过JavaScript动态生成 -->
+        </div>
+        <div class="image-pagination" id="image-pagination">
+          <!-- 分页控件将通过JavaScript动态生成 -->
+        </div>
+      </section>
+
+      <!-- 新增/编辑分类模态框 -->
+      <div id="category-modal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="category-modal-title">新增分类</h3>
+            <span class="close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <form id="category-form">
+              <div class="form-group">
+                <label for="category-name">分类名称</label>
+                <input type="text" id="category-name" name="name" required aria-required="true" autocomplete="off">
+              </div>
+              <div class="form-actions">
+                <button type="button" id="category-cancel-btn" class="btn btn-secondary">取消</button>
+                <button type="submit" class="btn btn-primary">保存</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 统计分析页面 -->
+      <section id="statistics" class="page">
+        <div class="page-header">
+          <h2>统计分析</h2>
+        </div>
+        <div class="chart-container-large">
+          <canvas id="analysisChart"></canvas>
+        </div>
+      </section>
+
+      <!-- 关于我们设置页面 -->
+      <section id="about-settings" class="page">
+        <div class="page-header">
+          <h2>关于我们设置</h2>
+        </div>
+        <div class="about-settings-container">
+          <div class="about-setting-item">
+            <h3>使用说明</h3>
+            <div class="form-group">
+              <label for="usage-title">标题</label>
+              <input type="text" id="usage-title" class="form-control" placeholder="请输入使用说明标题">
+            </div>
+            <div class="form-group">
+              <label for="usage-content">详细内容</label>
+              <textarea id="usage-content" class="form-control" rows="10" placeholder="请输入使用说明详细内容"></textarea>
+            </div>
+            <button class="btn btn-primary" id="save-usage-btn">保存使用说明</button>
+          </div>
+          
+          <div class="about-setting-item">
+            <h3>用户协议</h3>
+            <div class="form-group">
+              <label for="agreement-title">标题</label>
+              <input type="text" id="agreement-title" class="form-control" placeholder="请输入用户协议标题">
+            </div>
+            <div class="form-group">
+              <label for="agreement-content">详细内容</label>
+              <textarea id="agreement-content" class="form-control" rows="10" placeholder="请输入用户协议详细内容"></textarea>
+            </div>
+            <button class="btn btn-primary" id="save-agreement-btn">保存用户协议</button>
+          </div>
+
+          <div class="about-setting-item">
+            <h3>隐私政策</h3>
+            <div class="form-group">
+              <label for="privacy-title">标题</label>
+              <input type="text" id="privacy-title" class="form-control" placeholder="请输入隐私政策标题">
+            </div>
+            <div class="form-group">
+              <label for="privacy-content">详细内容</label>
+              <textarea id="privacy-content" class="form-control" rows="10" placeholder="请输入隐私政策详细内容"></textarea>
+            </div>
+            <button class="btn btn-primary" id="save-privacy-btn">保存隐私政策</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 抽奖活动管理页面 -->
+      <section id="lottery-management" class="page">
+        <div class="page-header">
+          <h2>抽奖活动管理</h2>
+          <div class="actions">
+            <button class="btn btn-primary" id="add-lottery-btn">创建活动</button>
+          </div>
+        </div>
+        <div class="lottery-activities-list" id="lottery-activities-list">
+          <!-- 活动列表将通过JavaScript动态生成 -->
+        </div>
+      </section>
+
+      <!-- 收货地址管理页面 -->
+      <section id="shipping-management" class="page">
+        <div class="page-header">
+          <h2>收货地址管理</h2>
+          <div class="actions">
+            <select id="shipping-activity-filter" class="form-control" style="width:200px;display:inline-block;">
+              <option value="">全部活动</option>
+            </select>
+            <select id="shipping-status-filter" class="form-control" style="width:150px;display:inline-block;">
+              <option value="">全部状态</option>
+              <option value="pending">待发货</option>
+              <option value="shipped">已发货</option>
+              <option value="delivered">已签收</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>活动</th>
+                <th>奖品</th>
+                <th>用户</th>
+                <th>收货人</th>
+                <th>手机号</th>
+                <th>收货地址</th>
+                <th>状态</th>
+                <th>快递单号</th>
+                <th>提交时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="shipping-list-body">
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 发货操作模态框 -->
+      <div id="shipping-modal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:500px;">
+          <div class="modal-header">
+            <h3>更新发货信息</h3>
+            <button class="close-btn" onclick="closeShippingModal()">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>发货状态</label>
+              <select id="shipping-modal-status" class="form-control">
+                <option value="pending">待发货</option>
+                <option value="shipped">已发货</option>
+                <option value="delivered">已签收</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>快递公司</label>
+              <select id="shipping-modal-courier" class="form-control">
+                <option value="">请选择快递公司</option>
+                <option value="顺丰速运">顺丰速运</option>
+                <option value="中通快递">中通快递</option>
+                <option value="圆通速递">圆通速递</option>
+                <option value="韵达快递">韵达快递</option>
+                <option value="申通快递">申通快递</option>
+                <option value="百世快递">百世快递</option>
+                <option value="极兔速递">极兔速递</option>
+                <option value="邮政EMS">邮政EMS</option>
+                <option value="京东物流">京东物流</option>
+                <option value="德邦快递">德邦快递</option>
+                <option value="天天快递">天天快递</option>
+                <option value="宅急送">宅急送</option>
+                <option value="其他">其他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>快递单号</label>
+              <input type="text" id="shipping-modal-tracking" class="form-control" placeholder="请输入快递单号">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeShippingModal()">取消</button>
+            <button class="btn btn-primary" onclick="saveShippingStatus()">保存</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 站内信管理页面 -->
+      <section id="messages-management" class="page">
+        <div class="page-header">
+          <h2>站内信管理</h2>
+          <div class="actions">
+            <button class="btn btn-primary" id="send-message-btn">发送消息</button>
+          </div>
+        </div>
+        <div class="messages-list-container">
+          <div class="message-tabs">
+            <button class="message-tab active" data-type="all">全部消息</button>
+            <button class="message-tab" data-type="broadcast">广播消息</button>
+            <button class="message-tab" data-type="personal">个人消息</button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>类型</th>
+                  <th>标题</th>
+                  <th>接收用户</th>
+                  <th>发送时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="messages-list-body">
+                <!-- 消息列表将通过JavaScript动态生成 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 客服管理页面 -->
+      <section id="customer-service" class="page">
+        <div class="page-header">
+          <h2>客服管理</h2>
+        </div>
+        <div class="customer-service-tabs">
+          <button class="cs-tab active" data-tab="chats">会话列表</button>
+          <button class="cs-tab" data-tab="auto-replies">自动回复</button>
+        </div>
+        <div id="cs-chats-panel" class="cs-panel active">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>用户</th>
+                  <th>最后消息</th>
+                  <th>时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="cs-chats-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="cs-auto-replies-panel" class="cs-panel">
+          <div class="actions" style="margin-bottom:12px">
+            <button class="btn btn-primary" id="cs-add-auto-reply-btn">添加自动回复</button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>关键词</th>
+                  <th>快捷问题</th>
+                  <th>回复内容</th>
+                  <th>状态</th>
+                  <th>快捷</th>
+                  <th>优先级</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="cs-auto-replies-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- APP 版本管理页面 -->
+      <section id="app-version" class="page">
+        <div class="page-header">
+          <h2>APP 版本管理</h2>
+          <div class="actions">
+            <button class="btn btn-primary" id="publish-version-btn">+ 发布新版本</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>版本号</th>
+                <th>版本名</th>
+                <th>下载链接</th>
+                <th>更新说明</th>
+                <th>强制更新</th>
+                <th>激活状态</th>
+                <th>文件大小</th>
+                <th>发布时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="app-version-list">
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 发布新版本模态框 -->
+      <div id="publish-version-modal" class="modal">
+        <div class="modal-content" style="max-width:600px">
+          <div class="modal-header">
+            <h3 id="publish-version-modal-title">发布新版本</h3>
+            <span class="close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <form id="publish-version-form">
+              <!-- 步骤 1: APK 文件 -->
+              <div class="form-section">
+                <h4 style="margin-bottom:12px;color:#333;">📦 APK 文件</h4>
+                <div class="form-group">
+                  <label for="apk-upload-file">上传 APK 文件</label>
+                  <div style="display:flex;gap:12px;align-items:center;">
+                    <input type="file" id="apk-upload-file" accept=".apk" style="flex:1;">
+                    <button type="button" id="upload-apk-now-btn" class="btn btn-secondary">上传</button>
+                  </div>
+                  <p style="font-size:12px;color:#999;margin-top:4px;">支持 APK 格式，最大 200MB</p>
+                </div>
+                
+                <!-- 上传进度 -->
+                <div id="apk-upload-progress" style="display:none;margin:12px 0;">
+                  <div style="background:#f0f0f0;border-radius:4px;height:8px;overflow:hidden;">
+                    <div id="apk-progress-bar" style="background:#4CAF50;height:100%;width:0%;transition:width 0.3s;"></div>
+                  </div>
+                  <p id="apk-progress-text" style="text-align:center;margin-top:4px;font-size:12px;color:#666;">准备上传...</p>
+                </div>
+                
+                <!-- 已上传文件信息 -->
+                <div id="uploaded-apk-info" style="display:none;margin:12px 0;padding:12px;background:#f6ffed;border:1px solid #b7eb8f;border-radius:4px;">
+                  <p style="margin:0;color:#52c41a;font-weight:500;">✅ 已上传文件</p>
+                  <p style="margin:4px 0 0;font-size:13px;color:#666;">文件名：<span id="uploaded-filename"></span></p>
+                  <p style="margin:4px 0 0;font-size:13px;color:#666;">文件大小：<span id="uploaded-filesize"></span></p>
+                </div>
+                
+                <div style="margin:16px 0;text-align:center;">
+                  <span style="color:#999;font-size:12px;">或</span>
+                </div>
+                
+                <div class="form-group">
+                  <label for="apk-download-url">直接输入下载链接</label>
+                  <input type="url" id="apk-download-url" placeholder="https://your-domain.com/uploads/apk/app-v1.0.0.apk">
+                  <p style="font-size:12px;color:#999;margin-top:4px;">如果已上传到服务器，可直接输入链接</p>
+                </div>
+              </div>
+              
+              <!-- 步骤 2: 版本信息 -->
+              <div class="form-section">
+                <h4 style="margin-bottom:12px;color:#333;">📝 版本信息</h4>
+                <div class="form-group">
+                  <label for="version-code">版本号</label>
+                  <input type="number" id="version-code" required placeholder="如：2" min="1">
+                  <p style="font-size:12px;color:#999;margin-top:4px;">递增数字，用于版本比较</p>
+                </div>
+                
+                <div class="form-group">
+                  <label for="version-name">版本名</label>
+                  <input type="text" id="version-name" required placeholder="如：1.1.0">
+                  <p style="font-size:12px;color:#999;margin-top:4px;">展示给用户的版本名称</p>
+                </div>
+                
+                <div class="form-group">
+                  <label for="update-description">更新说明</label>
+                  <textarea id="update-description" rows="4" placeholder="请输入更新内容，如：&#10;1. 修复了版本检查问题&#10;2. 优化了用户体验"></textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                    <input type="checkbox" id="force-update" style="width:18px;height:18px;">
+                    <span>强制更新</span>
+                  </label>
+                  <p style="font-size:12px;color:#999;margin-top:4px;margin-left:26px;">开启后用户必须更新才能使用 APP</p>
+                </div>
+              </div>
+              
+              <div class="form-actions" style="margin-top:24px;">
+                <button type="button" class="btn btn-secondary publish-version-cancel">取消</button>
+                <button type="submit" class="btn btn-primary">立即发布</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 客服聊天详情模态框 -->
+      <div id="cs-chat-modal" class="modal">
+        <div class="modal-content" style="max-width:600px">
+          <div class="modal-header">
+            <h3 id="cs-chat-modal-title">与用户对话</h3>
+            <span class="close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <div id="cs-chat-messages" class="cs-chat-messages" style="max-height:320px;overflow-y:auto;margin-bottom:12px;padding:8px;border:1px solid #ddd;border-radius:6px;"></div>
+            <div class="form-group">
+              <textarea id="cs-reply-content" rows="3" placeholder="输入回复内容..." style="width:100%"></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" id="cs-send-reply-btn" class="btn btn-primary">发送</button>
+              <button type="button" id="cs-clear-chat-btn" class="btn btn-secondary">清空聊天记录</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 添加/编辑自动回复模态框 -->
+      <div id="cs-auto-reply-modal" class="modal">
+        <div class="modal-content" style="max-width:500px">
+          <div class="modal-header">
+            <h3 id="cs-auto-reply-modal-title">添加自动回复</h3>
+            <span class="close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <form id="cs-auto-reply-form">
+              <input type="hidden" id="cs-ar-id" value="">
+              <div class="form-group">
+                <label for="cs-ar-keyword">关键词（仅当用户【点击快捷问题】时匹配触发自动回复）</label>
+                <input type="text" id="cs-ar-keyword" required placeholder="如：你好">
+              </div>
+              <div class="form-group">
+                <label for="cs-ar-question-text">快捷问题显示文案（用户端可点击按钮文字，为空则用关键词）</label>
+                <input type="text" id="cs-ar-question-text" placeholder="如：请问营业时间？">
+              </div>
+              <div class="form-group">
+                <label for="cs-ar-reply">回复内容</label>
+                <textarea id="cs-ar-reply" rows="4" required placeholder="自动回复的内容"></textarea>
+              </div>
+              <div class="form-group">
+                <label><input type="checkbox" id="cs-ar-active" checked> 启用自动回复</label>
+              </div>
+              <div class="form-group">
+                <label><input type="checkbox" id="cs-ar-show-quick" checked> 在APP端显示为可点击的快捷问题（点击→自动回复；手动输入→直接对话由管理员回复）</label>
+              </div>
+              <div class="form-group">
+                <label for="cs-ar-sort">优先级（越大越优先）</label>
+                <input type="number" id="cs-ar-sort" value="0" min="0">
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary cs-ar-cancel">取消</button>
+                <button type="submit" class="btn btn-primary">保存</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 发送消息模态框 -->
+      <div id="send-message-modal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="send-message-modal-title">发送站内信</h3>
+            <span class="close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <form id="send-message-form">
+              <div class="form-group">
+                <label for="message-type">消息类型</label>
+                <select id="message-type" name="type" required>
+                  <option value="broadcast">广播消息（发送给所有用户）</option>
+                  <option value="personal">个人消息（@指定用户）</option>
+                </select>
+              </div>
+              <div class="form-group" id="recipient-group" style="display: none;">
+                <label for="recipient-account">接收用户账号</label>
+                <input type="text" id="recipient-account" name="recipient_account" placeholder="请输入用户账号">
+              </div>
+              <div class="form-group">
+                <label for="message-title">标题</label>
+                <input type="text" id="message-title" name="title" required placeholder="请输入消息标题">
+              </div>
+              <div class="form-group">
+                <label for="message-content">内容</label>
+                <textarea id="message-content" name="content" rows="6" required placeholder="请输入消息内容"></textarea>
+              </div>
+              <div class="form-actions">
+                <button type="button" id="send-message-cancel-btn" class="btn btn-secondary">取消</button>
+                <button type="submit" class="btn btn-primary">发送</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 创建/编辑抽奖活动模态框 -->
+      <div id="lottery-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+          <div class="modal-header">
+            <h3 id="lottery-modal-title">创建抽奖活动</h3>
+            <span class="close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <form id="lottery-form">
+              <div class="form-group">
+                <label for="lottery-name">活动名称</label>
+                <input type="text" id="lottery-name" name="name" required class="form-control">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="lottery-start-time">开始时间</label>
+                  <input type="datetime-local" id="lottery-start-time" name="start_time" required class="form-control">
+                </div>
+                <div class="form-group">
+                  <label for="lottery-end-time">结束时间</label>
+                  <input type="datetime-local" id="lottery-end-time" name="end_time" required class="form-control">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="lottery-daily-limit">每日抽奖次数</label>
+                  <input type="number" id="lottery-daily-limit" name="daily_limit" min="1" value="1" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label for="lottery-total-limit">总抽奖次数</label>
+                  <input type="number" id="lottery-total-limit" name="total_limit" min="1" value="3" class="form-control">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="lottery-win-rate">总中奖率 (%)</label>
+                  <input type="number" id="lottery-win-rate" name="win_rate" min="0" max="100" step="1" value="30" class="form-control" oninput="updateProbabilityHint()">
+                  <small style="color: #666; font-size: 12px;">所有奖品加起来的中奖概率，剩余为"谢谢参与"。奖品概率按数量比例自动分配。</small>
+                </div>
+                <div class="form-group">
+                  <label for="lottery-status">活动状态</label>
+                  <select id="lottery-status" name="status" class="form-control">
+                    <option value="active">启用</option>
+                    <option value="inactive">禁用</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="lottery-prize-description">中奖说明</label>
+                <textarea id="lottery-prize-description" name="prize_description" rows="5" class="form-control" placeholder="请输入中奖规则、领奖方式、注意事项等"></textarea>
+              </div>
+              <div class="form-group">
+                <label>奖品设置</label>
+                <div id="prizes-container">
+                  <!-- 奖品列表将通过JavaScript动态生成 -->
+                </div>
+                <button type="button" class="btn btn-secondary" id="add-prize-btn">添加奖品</button>
+              </div>
+              <div class="form-actions">
+                <button type="button" id="lottery-cancel-btn" class="btn btn-secondary">取消</button>
+                <button type="submit" class="btn btn-primary">保存</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 活动统计模态框 -->
+      <div id="lottery-stats-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+          <div class="modal-header">
+            <h3 id="lottery-stats-title">活动统计</h3>
+            <span class="close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                  <div class="stat-number" id="stats-participants">0</div>
+                  <div class="stat-label">参与人数</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-info">
+                  <div class="stat-number" id="stats-total-draws">0</div>
+                  <div class="stat-label">抽奖次数</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-info">
+                  <div class="stat-number" id="stats-winning-draws">0</div>
+                  <div class="stat-label">中奖次数</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">📺</div>
+                <div class="stat-info">
+                  <div class="stat-number" id="stats-ad-watch-count">0</div>
+                  <div class="stat-label">广告观看次数</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                  <div class="stat-number" id="stats-win-rate">0%</div>
+                  <div class="stat-label">实际中奖率</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                  <div class="stat-number" id="stats-shipping">0/0</div>
+                  <div class="stat-label">已填地址/需发货</div>
+                </div>
+              </div>
+            </div>
+            <div class="stats-actions">
+              <button class="btn btn-secondary" id="view-ad-watch-records-btn">查看广告观看记录</button>
+            </div>
+            <h3>奖品发放情况</h3>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>奖品名称</th>
+                    <th>总设定数量</th>
+                    <th>当前剩余</th>
+                    <th>已发放</th>
+                  </tr>
+                </thead>
+                <tbody id="prizes-stats-body">
+                  <!-- 奖品统计将通过JavaScript动态生成 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 广告观看记录模态框 -->
+      <div id="ad-watch-records-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+          <div class="modal-header">
+            <h3>广告观看记录</h3>
+            <span class="close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <div class="search-bar">
+              <input type="text" id="ad-watch-search" placeholder="搜索用户ID...">
+              <button class="btn btn-secondary" id="ad-watch-search-btn">搜索</button>
+              <button class="btn btn-secondary" id="ad-watch-refresh-btn">刷新</button>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>用户ID</th>
+                    <th>广告ID</th>
+                    <th>广告时长(秒)</th>
+                    <th>实际观看时长(秒)</th>
+                    <th>观看状态</th>
+                    <th>观看时间</th>
+                  </tr>
+                </thead>
+                <tbody id="ad-watch-records-body">
+                  <!-- 广告观看记录将通过JavaScript动态生成 -->
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination" id="ad-watch-pagination">
+              <!-- 分页控件将通过JavaScript动态生成 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 信息详情页 -->
+      <section id="info-detail" class="page">
+        <div class="detail-header">
+          <button id="back-to-all-info" class="btn btn-secondary">← 返回</button>
+          <h2 id="detail-store-name">信息详情</h2>
+        </div>
+        <div class="detail-content">
+          <div class="detail-basic-info">
+            <div class="info-item">
+              <label>店名:</label>
+              <span id="detail-store-name-2"></span>
+              <button id="read-store-name-btn" class="btn btn-sm btn-ai" title="语音朗读店名">🔊</button>
+            </div>
+            <div class="info-item">
+              <label>分类:</label>
+              <span id="detail-category" class="category-tag"></span>
+            </div>
+            <div class="info-item">
+              <label>地区:</label>
+              <span id="detail-region"></span>
+            </div>
+            <div class="info-item">
+              <label>地址:</label>
+              <span id="detail-address"></span>
+              <button id="read-address-btn" class="btn btn-sm btn-ai" title="语音朗读地址">🔊</button>
+            </div>
+            <div class="info-item">
+              <label>创建时间:</label>
+              <span id="detail-created-at"></span>
+            </div>
+            <div class="info-item">
+              <label>最后更新:</label>
+              <span id="detail-updated-at"></span>
+            </div>
+            <div class="info-item">
+              <label>查看次数:</label>
+              <span id="detail-view-count"></span>
+            </div>
+            <div class="info-item">
+              <label>联系方式:</label>
+              <span id="detail-contact"></span>
+            </div>
+            <div class="info-item">
+              <label>描述:</label>
+              <span id="detail-description"></span>
+              <button id="read-description-btn" class="btn btn-sm btn-ai" title="语音朗读描述">🔊</button>
+            </div>
+            <div class="info-item">
+              <label>营业时间:</label>
+              <span id="detail-business-hours"></span>
+            </div>
+            <div class="info-item">
+              <label>价格:</label>
+              <span id="detail-price"></span>
+            </div>
+          </div>
+          <div class="detail-ai-tools" style="margin: 20px 0; padding: 15px; background: #f0f9ff; border-radius: 8px; border: 1px solid #e0f2fe;">
+            <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #333;">🤖 AI 智能工具</h3>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button id="read-all-info-btn" class="btn btn-ai-primary" title="语音朗读全部信息">🔊 语音朗读全部信息</button>
+              <button id="stop-reading-btn" class="btn btn-ai-secondary" title="停止朗读" style="display:none;">⏹️ 停止朗读</button>
+              <button id="recognize-image-btn" class="btn btn-ai-primary" title="AI 图片识别">👁️ AI 图片识别</button>
+            </div>
+            <div id="ai-result-container" style="margin-top: 15px; display: none;">
+              <div style="background: white; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+                <h4 style="margin: 0 0 8px 0; color: #666;">AI 识别结果：</h4>
+                <div id="ai-result-content" style="white-space: pre-wrap; color: #333;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="detail-images-section">
+            <h3>图片</h3>
+            <div id="detail-images" class="detail-images-container">
+              <!-- 图片将通过JavaScript动态生成 -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  </div><!-- end backend-layout -->
+
+  <!-- 信息编辑/添加模态框 -->
+  <div id="info-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">增加信息</h3>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="info-form">
+          <div class="form-group">
+            <label for="store-name">店名 *</label>
+            <input type="text" id="store-name" name="store_name" required aria-required="true" autocomplete="organization">
+          </div>
+          <div class="form-group">
+            <label for="category">分类 *</label>
+            <select id="category" name="category" required aria-required="true">
+              <option value="">请选择分类</option>
+              <!-- 分类选项将从分类管理动态加载 -->
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="province">省/直辖市 *</label>
+              <select id="province" name="province" required aria-required="true">
+                <option value="">请选择省份</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="city">市 *</label>
+              <select id="city" name="city" required aria-required="true">
+                <option value="">请选择城市</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="district">区/县 *</label>
+              <select id="district" name="district" required aria-required="true">
+                <option value="">请选择区县</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="address">详细地址 *</label>
+            <input type="text" id="address" name="address" required aria-required="true" autocomplete="street-address">
+          </div>
+          <div class="form-group">
+            <label>联系方式</label>
+            <div class="contact-section">
+              <!-- 电话号码区域 -->
+              <div class="contact-type-section">
+                <div class="contact-type-header">
+                  <label>📞 电话号码</label>
+                  <button type="button" class="btn btn-sm btn-add" id="add-phone-btn">+ 添加电话</button>
+                </div>
+                <div id="phone-inputs-container" class="contact-inputs-container">
+                  <div class="contact-input-wrapper">
+                    <input type="tel" class="contact-input phone-input" name="phone[]" placeholder="请输入电话号码" autocomplete="tel">
+                    <button type="button" class="btn-remove-contact" style="display: none;">删除</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 微信区域 -->
+              <div class="contact-type-section">
+                <div class="contact-type-header">
+                  <label>💬 微信号</label>
+                  <button type="button" class="btn btn-sm btn-add" id="add-wechat-btn">+ 添加微信</button>
+                </div>
+                <div id="wechat-inputs-container" class="contact-inputs-container">
+                  <div class="contact-input-wrapper">
+                    <input type="text" class="contact-input wechat-input" name="wechat[]" placeholder="请输入微信号" autocomplete="off">
+                    <button type="button" class="btn-remove-contact" style="display: none;">删除</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 座机号码区域 -->
+              <div class="contact-type-section">
+                <div class="contact-type-header">
+                  <label>☎️ 座机号码</label>
+                  <button type="button" class="btn btn-sm btn-add" id="add-landline-btn">+ 添加座机</button>
+                </div>
+                <div id="landline-inputs-container" class="contact-inputs-container">
+                  <div class="contact-input-wrapper">
+                    <input type="tel" class="contact-input landline-input" name="landline[]" placeholder="请输入座机号码，如 010-12345678" autocomplete="tel">
+                    <button type="button" class="btn-remove-contact" style="display: none;">删除</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <small class="form-hint">非必填，可添加多个联系方式。点击"+ 添加"按钮可增加输入框。</small>
+          </div>
+          <div class="form-group">
+            <label for="description">描述</label>
+            <textarea id="description" name="description" rows="3" autocomplete="off"></textarea>
+            <small class="form-hint">非必填，店铺描述或特色介绍</small>
+          </div>
+          <div class="form-group">
+            <label for="business_hours">营业时间</label>
+            <input type="text" id="business_hours" name="business_hours" autocomplete="off">
+            <small class="form-hint">非必填，如 9:00-22:00</small>
+          </div>
+          <div class="form-group">
+            <label for="price">价格</label>
+            <input type="number" id="price" name="price" step="0.01" min="0" autocomplete="off">
+            <small class="form-hint">非必填，如 100.00</small>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="latitude">纬度</label>
+              <input type="number" id="latitude" name="latitude" step="0.000001" min="-90" max="90" autocomplete="off">
+              <small class="form-hint">非必填，如 39.9042</small>
+            </div>
+            <div class="form-group">
+              <label for="longitude">经度</label>
+              <input type="number" id="longitude" name="longitude" step="0.000001" min="-180" max="180" autocomplete="off">
+              <small class="form-hint">非必填，如 116.4074</small>
+            </div>
+            <div class="form-group">
+              <label for="rating">评分</label>
+              <div class="rating-input-group">
+                <input type="text" id="rating" name="rating" autocomplete="off" placeholder="1-100" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="3">
+                <div class="rating-option">
+                  <input type="radio" id="rating-none" name="rating-type" value="none">
+                  <label for="rating-none">暂无评分</label>
+                </div>
+              </div>
+              <small class="form-hint">选择"暂无评分"或输入1-100整数评分</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>图片上传 (最多3张)</label>
+            <div class="image-upload-grid">
+              <div class="image-upload-box" id="image-upload-1">
+                <div class="upload-placeholder">+</div>
+                <span>添加图片</span>
+                <div class="image-upload-options">
+                  <button type="button" class="image-upload-option-btn active" data-option="upload" data-index="1">本地上传</button>
+                  <button type="button" class="image-upload-option-btn btn-yellow" data-option="library" data-index="1">从图库上传</button>
+                </div>
+                <input type="file" id="image-input-1" name="images" accept="image/jpeg,image/jpg,image/png,image/gif" class="image-input" data-index="1" aria-label="上传图片" multiple>
+              </div>
+            </div>
+            <div id="image-preview" class="image-preview-area"></div>
+            <div class="image-library-references" id="image-library-references" style="display: none;">
+              <h4>已选择的图库图片</h4>
+              <div class="image-reference-list" id="image-reference-list"></div>
+            </div>
+          </div>
+          <div class="form-actions">
+                <button type="button" id="cancel-btn" class="btn btn-secondary">取消</button>
+                <button type="submit" class="btn btn-primary">保存</button>
+              </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图片库选择模态框 -->
+  <div id="image-library-modal" class="modal">
+    <div class="modal-content" style="max-width: 90vw; max-height: 80vh;">
+      <div class="modal-header">
+        <h3>选择图库图片</h3>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="image-library-search">
+          <label for="image-library-search" class="sr-only">搜索图片</label>
+          <input type="text" id="image-library-search" name="search" placeholder="搜索图片..." autocomplete="off">
+          <button class="btn btn-secondary" id="image-library-refresh">刷新</button>
+        </div>
+        <div class="image-library-grid" id="image-library-grid">
+          <!-- 图片将通过JavaScript动态生成 -->
+        </div>
+        <div class="image-library-actions">
+          <button class="btn btn-secondary" id="image-library-cancel">取消</button>
+          <button class="btn btn-primary" id="image-library-select" disabled>选择</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 添加打开终端的按钮 -->
+  <button id="open-terminal-btn" class="floating-terminal-btn" title="打开终端">💻</button>
+
+  <!-- 投稿详情/审核模态框 -->
+  <div id="submission-detail-modal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3>投稿详情 - 审核</h3>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div id="submission-detail-content" class="submission-detail-content">
+          <!-- 详情内容动态生成 -->
+        </div>
+        <div class="submission-review-actions" id="submission-review-actions">
+          <button type="button" class="btn btn-primary" id="submission-approve-btn">通过并上架</button>
+          <button type="button" class="btn btn-danger" id="submission-reject-btn">拒绝</button>
+        </div>
+        <div id="submission-reject-form" style="display: none;">
+          <div class="form-group">
+            <label for="submission-reject-reason">拒绝原因</label>
+            <input type="text" id="submission-reject-reason" placeholder="选填，将反馈给投稿者">
+          </div>
+          <button type="button" class="btn btn-danger" id="submission-reject-confirm-btn">确认拒绝</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图片预览模态框 -->
+  <div id="image-preview-modal" class="image-preview-modal">
+    <div class="image-preview-toolbar">
+      <button class="preview-tool-btn" id="zoom-in-btn" title="放大">+</button>
+      <span class="zoom-level" id="zoom-level">100%</span>
+      <button class="preview-tool-btn" id="zoom-out-btn" title="缩小">-</button>
+      <button class="preview-tool-btn" id="zoom-reset-btn" title="重置">↻</button>
+      <button class="preview-tool-btn" id="zoom-fit-btn" title="适应窗口">▢</button>
+    </div>
+    <span class="image-preview-close">&times;</span>
+    <div class="image-preview-container">
+      <img id="image-preview-img" src="" alt="预览图片">
+    </div>
+  </div>
+
+  <script src="chinese_regions.js?v=20260429"></script>
+        <script src="script.js?v=20260429"></script>
+    </body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 信息管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 24px; font-weight: bold; }
+        .user-menu { display: flex; align-items: center; gap: 20px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        .btn-outline:hover {
+            background: white;
+            color: #667eea;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .search-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .info-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        .info-content { padding: 15px; }
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .info-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .info-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #999;
+        }
+        .info-price {
+            color: #f44336;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e1e1e1;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 1000;
+            display: none;
+        }
+        .toast.show { display: block; }
+        .icp-footer {
+            margin-top: 40px;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        .icp-footer a {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        .icp-footer .icp-sep { margin: 0 10px; color: #999; }
+        @media (max-width: 768px) {
+            .nav-content { flex-direction: column; gap: 15px; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast"></div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">📋 信息管理系统</div>
+            <div class="user-menu">
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <span id="userName">用户</span>
+                    <button class="btn btn-outline" onclick="logout()">退出登录</button>
+                </div>
+                <div id="guestMenu" style="display: flex; gap: 10px;">
+                    <a href="login.html" style="text-decoration: none;">
+                        <button class="btn btn-outline">登录</button>
+                    </a>
+                    <a href="register.html" style="text-decoration: none;">
+                        <button class="btn btn-outline">注册</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 搜索框 -->
+        <div class="search-box">
+            <input 
+                type="text" 
+                class="search-input" 
+                id="searchInput" 
+                placeholder="搜索信息..."
+                onkeypress="if(event.keyCode===13) searchInfo()"
+            >
+        </div>
+
+        <!-- 信息列表 -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <div>加载中...</div>
+        </div>
+
+        <div class="info-grid" id="infoGrid"></div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h2>暂无信息</h2>
+            <p>还没有发布任何信息</p>
+        </div>
+
+        <!-- ICP备案：备案号即链接，点击跳转工信部核验 -->
+        <footer class="icp-footer">
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">豫ICP备2024070343号-2</a>
+        </footer>
+    </div>
+
+    <script>
+        const API_BASE = 'https://your-domain.com/api';
+
+        // 页面加载时
+        window.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+            loadInfoList();
+        });
+
+        // 检查登录状态
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
+
+            if (token && userInfo) {
+                const user = JSON.parse(userInfo);
+                document.getElementById('userName').textContent = user.nick_name || user.username || '用户';
+                document.getElementById('userInfo').style.display = 'flex';
+                document.getElementById('guestMenu').style.display = 'none';
+            }
+        }
+
+        // 加载信息列表
+        async function loadInfoList() {
+            try {
+                const response = await fetch(`${API_BASE}/info`);
+                const result = await response.json();
+
+                document.getElementById('loading').style.display = 'none';
+
+                if (result.code === 200 && result.data && result.data.length > 0) {
+                    renderInfoList(result.data);
+                } else {
+                    document.getElementById('emptyState').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('加载失败:', error);
+                showToast('加载失败，请稍后重试');
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // 渲染信息列表
+        function renderInfoList(infos) {
+            const grid = document.getElementById('infoGrid');
+            grid.innerHTML = '';
+
+            infos.forEach(info => {
+                const card = document.createElement('div');
+                card.className = 'info-card';
+                
+                const firstImage = info.images && info.images.length > 0 ? info.images[0] : null;
+                const imageUrl = firstImage || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNjY2MiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
+
+                card.innerHTML = `
+                    <img class="info-image" src="${imageUrl}" alt="${info.store_name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNjY2MiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='">
+                    <div class="info-content">
+                        <h3 class="info-title">${info.store_name || '未命名'}</h3>
+                        <p class="info-desc">${info.description || '暂无描述'}</p>
+                        <div class="info-meta">
+                            <span>📍 ${info.province || ''}${info.city || ''}</span>
+                            ${info.price ? `<span class="info-price">¥${info.price}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // 搜索信息
+        async function searchInfo() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (!keyword) {
+                loadInfoList();
+                return;
+            }
+
+            try {
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('infoGrid').innerHTML = '';
+                document.getElementById('emptyState').style.display = 'none';
+
+                const response = await fetch(`${API_BASE}/info/search?keyword=${encodeURIComponent(keyword)}`);
+                const result = await response.json();
+
+                document.getElementById('loading').style.display = 'none';
+
+                if (result.code === 200 && result.data && result.data.length > 0) {
+                    renderInfoList(result.data);
+                } else {
+                    document.getElementById('emptyState').style.display = 'block';
+                    showToast('未找到相关信息');
+                }
+            } catch (error) {
+                console.error('搜索失败:', error);
+                showToast('搜索失败，请稍后重试');
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            window.location.reload();
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

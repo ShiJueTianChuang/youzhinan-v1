@@ -1,0 +1,190 @@
+<!-- detail.wxml -->
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar" style="height: {{expandedNavBarHeight}}px;">
+    <view class="nav-back-btn" bindtap="goBack">
+      <text class="back-icon">〈</text>
+    </view>
+    <view class="nav-title">详情</view>
+  </view>
+
+  <!-- 主体内容 -->
+  <view class="main-content" style="margin-top: {{expandedNavBarHeight}}px;">
+    <!-- 详情卡片 -->
+    <view class="detail-card">
+      <!-- 图片轮播 -->
+      <view class="detail-image-container">
+        <swiper 
+          wx:if="{{barData.images && barData.images.length > 0}}" 
+          class="detail-swiper" 
+          indicator-dots="true" 
+          autoplay="true" 
+          interval="3000" 
+          duration="500" 
+          circular="true"
+        >
+          <swiper-item wx:for="{{barData.images}}" wx:key="index">
+            <image 
+              class="detail-image" 
+              src="{{item}}" 
+              mode="aspectFit"
+              lazy-load="{{true}}"
+              webp="{{true}}"
+              binderror="onImageError"
+              data-index="{{index}}"
+            ></image>
+          </swiper-item>
+        </swiper>
+        <view wx:else class="detail-image-placeholder">
+          <text>暂无图片</text>
+        </view>
+      </view>
+
+      <!-- 标题和评分 -->
+      <view class="detail-header">
+        <view class="detail-title">
+          {{barData.name}}
+          <text wx:if="{{barData.categoryType}}" class="category-tag">{{barData.categoryType}}</text>
+        </view>
+        <view class="detail-rating">
+          <text class="rating-text">评分:</text>
+          <text class="rating-value" wx:if="{{barData.rating != ''}}">{{barData.rating}}</text>
+          <text class="rating-value" wx:else>暂无评分</text>
+        </view>
+      </view>
+
+      <!-- 地址 -->
+      <view class="detail-section">
+        <view class="section-title">
+          <text>地址</text>
+        </view>
+        <view class="section-content">
+          <text class="address-text">{{barData.province}}{{barData.city}}{{barData.district}}{{barData.address}}</text>
+          <view class="address-actions">
+            <view class="copy-btn" bindtap="copyAddress">复制</view>
+            <view class="distance-tag" wx:if="{{distanceLoading}}">
+              <text class="distance-text">距离计算中…</text>
+            </view>
+            <view class="distance-tag" wx:elif="{{distanceText}}">
+              <text class="distance-text">距您约 {{distanceText}}</text>
+            </view>
+            <view class="distance-hint" wx:elif="{{distanceUnavailable}}">
+              <text class="distance-text-muted">开启定位后可显示与您的直线距离</text>
+            </view>
+            <view class="nav-btn-icon" bindtap="openLocation">
+              <image class="btn-icon-img" src="/images/导航-01.png"></image>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 营业时间 -->
+      <view class="detail-section" wx:if="{{barData.openingHours}}">
+        <view class="section-title">
+          <text>营业时间</text>
+        </view>
+        <view class="section-content">
+          <text class="info-text">{{barData.openingHours}}</text>
+        </view>
+      </view>
+
+      <!-- 价格/人均 -->
+      <view class="detail-section" wx:if="{{barData.price}}">
+        <view class="section-title">
+          <text>人均消费</text>
+        </view>
+        <view class="section-content">
+          <text class="price-text">{{barData.price}}</text>
+        </view>
+      </view>
+
+      <!-- 描述 -->
+      <view class="detail-section" wx:if="{{barData.description}}">
+        <view class="section-title">
+          <text>描述</text>
+        </view>
+        <view class="section-content">
+          <text class="description-text">{{barData.description}}</text>
+        </view>
+      </view>
+
+      <!-- 联系方式 -->
+      <view class="detail-section" wx:if="{{(barData.maskedPhoneNumbers && barData.maskedPhoneNumbers.length > 0) || (barData.maskedLandlineNumbers && barData.maskedLandlineNumbers.length > 0) || (barData.maskedOtherContacts && barData.maskedOtherContacts.length > 0)}}">
+        <view class="section-title">
+          <text>联系方式</text>
+        </view>
+        <view class="section-content">
+          <view class="contact-list">
+            <!-- 电话号码 -->
+            <view class="contact-item" wx:for="{{barData.maskedPhoneNumbers}}" wx:key="*this" wx:for-item="phone" wx:for-index="index">
+              <text class="contact-text">{{phone}}</text>
+              <view class="contact-action-btn-icon" bindtap="makePhoneCall" data-phone="{{barData.phoneNumbers[index]}}">
+                <image class="btn-icon-img" src="/images/客服.png" mode="aspectFill"></image>
+              </view>
+            </view>
+            <!-- 座机号 -->
+            <view class="contact-item" wx:for="{{barData.maskedLandlineNumbers}}" wx:key="*this" wx:for-item="landline" wx:for-index="index">
+              <text class="contact-text">{{landline}}</text>
+              <view class="contact-action-btn-icon" bindtap="makePhoneCall" data-phone="{{barData.landlineNumbers[index]}}">
+                <image class="btn-icon-img" src="/images/客服.png"></image>
+              </view>
+            </view>
+            <!-- 微信号 -->
+            <view class="contact-item" wx:for="{{barData.maskedOtherContacts}}" wx:key="*this" wx:for-item="contact" wx:for-index="index">
+              <text class="contact-text">{{contact}}</text>
+              <view class="contact-action-btn-icon" bindtap="copyContact" data-contact="{{barData.otherContacts[index]}}">
+                <text class="copy-text">复制</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 标签 -->
+      <view class="detail-section" wx:if="{{barData.tags && barData.tags.length > 0}}">
+        <view class="section-title">
+          <text>标签</text>
+        </view>
+        <view class="section-content">
+          <view class="tags-container">
+            <text class="tag" wx:for="{{barData.tags}}" wx:key="index" wx:for-item="tag">{{tag}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 收藏和分享按钮 -->
+      <view class="action-buttons-section">
+        <view class="action-btn home-btn" bindtap="goBack">
+          <image class="action-icon home-icon" src="/images/首页未点击.png" mode="aspectFit"></image>
+        </view>
+        <button class="action-btn favorite-btn {{barData.isFavorited ? 'favorited' : ''}}" bindtap="toggleFavorite">
+          <text class="action-icon favorite-icon">{{barData.isFavorited ? '♥' : '♡'}}</text>
+          <text class="action-text">{{barData.isFavorited ? '已收藏' : '收藏'}}</text>
+        </button>
+        <button class="action-btn share-btn" open-type="share" hover-class="none" hover-stop-propagation="{{true}}">
+          <text class="action-icon share-icon">⤤</text>
+          <text class="action-text">分享</text>
+        </button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 登录弹窗 -->
+  <view class="modal-mask" wx:if="{{showLoginModal}}">
+    <view class="modal-container">
+      <view class="modal-card">
+        <view class="modal-header">
+          <view class="modal-title">登录查看</view>
+        </view>
+        <view class="modal-body">
+          <view class="modal-tip">登录后查看完整联系方式</view>
+          <view class="modal-tip-sub">每日可拨打 6 次电话</view>
+        </view>
+        <view class="modal-actions">
+          <view class="action-btn cancel-btn" bindtap="cancelLogin">取消</view>
+          <view class="action-btn confirm-btn" bindtap="confirmLogin">去登录</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,43 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- AI圆形脑袋 -->
+    <path
+        android:fillColor="#7C4DFF"
+        android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
+    <!-- AI核心 - 发光效果 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,5a7,7 0,1 0,0 14a7,7 0,1 0,0 -14z"
+        android:fillAlpha="0.3"/>
+    <!-- 顶部大星星 - 代表智慧 -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M12,6l1.2,3.6h3.8l-3.1,2.3 1.2,3.6 -3.1,-2.3 -3.1,2.3 1.2,-3.6 -3.1,-2.3h3.8z"/>
+    <!-- 左上角小星星 -->
+    <path
+        android:fillColor="#FFD700"
+        android:fillAlpha="0.8"
+        android:pathData="M8,8l0.4,1.2h1.3l-1,0.7 0.4,1.2 -1.1,-0.8 -1.1,0.8 0.4,-1.2 -1,-0.7h1.3z"/>
+    <!-- 右下角小星星 -->
+    <path
+        android:fillColor="#FFD700"
+        android:fillAlpha="0.8"
+        android:pathData="M16,14l0.4,1.2h1.3l-1,0.7 0.4,1.2 -1.1,-0.8 -1.1,0.8 0.4,-1.2 -1,-0.7h1.3z"/>
+    <!-- AI眼睛/脑神经节点 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9.5,11a1,1 0,1 0,0 2a1,1 0,1 0,0 -2z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14.5,11a1,1 0,1 0,0 2a1,1 0,1 0,0 -2z"/>
+    <!-- 微笑/思考弧线 -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.8"
+        android:strokeLineCap="round"
+        android:pathData="M10,14q2,1 4,0"
+        android:fillAlpha="0"/>
+</vector>

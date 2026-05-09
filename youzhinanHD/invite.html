@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>邀请你一起抽奖 - 优之伴</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FFD700 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 24px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .icon { font-size: 64px; margin-bottom: 16px; }
+        .title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #E53935;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        .invite-code-box {
+            background: #FFF8E1;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .invite-code-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+        .invite-code {
+            font-size: 36px;
+            font-weight: 900;
+            color: #E53935;
+            letter-spacing: 6px;
+        }
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #E53935, #FF6B6B);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 12px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+        .btn-secondary {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #E53935;
+            border: 2px solid #E53935;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+        .btn-secondary:active {
+            transform: scale(0.97);
+        }
+        .tip {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 16px;
+            line-height: 1.6;
+        }
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #E53935;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div id="loadingSection" class="loading">
+            <div class="spinner"></div>
+            <p style="color: #888; font-size: 14px;">正在打开APP...</p>
+        </div>
+
+        <div id="mainSection" class="hidden">
+            <div class="icon">🎁</div>
+            <div class="title">邀请你一起抽奖</div>
+            <div class="subtitle">下载「优之伴」APP，注册时填写邀请码<br>即可获得额外抽奖机会！</div>
+            <div class="invite-code-box">
+                <div class="invite-code-label">邀请码</div>
+                <div class="invite-code" id="inviteCodeDisplay">--</div>
+            </div>
+            <a id="downloadBtn" class="btn-primary" href="#">立即下载APP</a>
+            <button class="btn-secondary" onclick="copyInviteCode()">复制邀请码</button>
+            <div class="tip">
+                1. 下载并安装「优之伴」APP<br>
+                2. 打开APP，使用手机号注册账号<br>
+                3. 注册时填写上方邀请码即可
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            var pathParts = window.location.pathname.split('/');
+            var inviteCode = pathParts[pathParts.length - 1] || '';
+            document.getElementById('inviteCodeDisplay').textContent = inviteCode || '--';
+
+            var schemeUrl = 'youzhinan://invite?code=' + encodeURIComponent(inviteCode);
+            var downloadUrl = '/api/app-version/latest-apk';
+
+            document.getElementById('downloadBtn').href = downloadUrl;
+
+            var startTime = Date.now();
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = schemeUrl;
+            document.body.appendChild(iframe);
+
+            var timer = setTimeout(function() {
+                document.getElementById('loadingSection').classList.add('hidden');
+                document.getElementById('mainSection').classList.remove('hidden');
+            }, 2000);
+
+            var visibilityChanged = function() {
+                if (document.hidden || document.webkitHidden) {
+                    clearTimeout(timer);
+                }
+            };
+            document.addEventListener('visibilitychange', visibilityChanged);
+            document.addEventListener('webkitvisibilitychange', visibilityChanged);
+
+            window.addEventListener('pagehide', function() {
+                clearTimeout(timer);
+            });
+        })();
+
+        function copyInviteCode() {
+            var code = document.getElementById('inviteCodeDisplay').textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(code).then(function() {
+                    showToast('邀请码已复制');
+                });
+            } else {
+                var textarea = document.createElement('textarea');
+                textarea.value = code;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('邀请码已复制');
+            }
+        }
+
+        function showToast(msg) {
+            var toast = document.createElement('div');
+            toast.textContent = msg;
+            toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.75);color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:9999;';
+            document.body.appendChild(toast);
+            setTimeout(function() { document.body.removeChild(toast); }, 2000);
+        }
+    </script>
+</body>
+</html>

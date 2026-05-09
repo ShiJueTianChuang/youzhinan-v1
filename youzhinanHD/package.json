@@ -1,0 +1,42 @@
+{
+  "name": "info-management-system",
+  "version": "1.0.0",
+  "description": "信息后端管理系统",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "@alicloud/pop-core": "^1.8.0",
+    "axios": "^1.13.3",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "form-data": "^4.0.5",
+    "jsonwebtoken": "^9.0.3",
+    "mammoth": "^1.12.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.16.1",
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^6.9.16",
+    "pdf-parse": "^2.4.5",
+    "sharp": "^0.34.5",
+    "ws": "^8.18.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "management",
+    "system",
+    "node.js",
+    "mysql"
+  ],
+  "author": "",
+  "license": "ISC"
+}

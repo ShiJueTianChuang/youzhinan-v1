@@ -1,0 +1,117 @@
+<view class="container">
+  <view class="blue-header">
+    <view class="wave-layer wave1"></view>
+    <view class="wave-layer wave2"></view>
+    <view class="wave-layer wave3"></view>
+    <view class="user-section">
+      <view class="avatar-wrapper" bindtap="handleLogin">
+        <view class="avatar-placeholder" wx:if="{{!userInfo}}">点我登录</view>
+        <block wx:else>
+          <image
+            class="avatar-image"
+            src="{{headerAvatarSrc}}"
+            mode="aspectFill"
+            bindload="onHeaderAvatarLoad"
+            binderror="onHeaderAvatarError"
+          />
+          <view class="avatar-error-mask" wx:if="{{remoteAvatarLoadFailed}}" catchtap="retryRemoteAvatar" data-from="header">
+            <text class="avatar-error-line">头像加载失败</text>
+            <text class="avatar-error-retry">轻触重试</text>
+          </view>
+        </block>
+      </view>
+      <view class="user-details" wx:if="{{userInfo}}">
+        <view class="user-name">{{userInfo.nickName}}<text class="admin-badge" wx:if="{{userInfo.is_admin === 1}}">管理员</text></view>
+        <view class="user-desc" wx:if="{{userInfo.username}}">账号: {{userInfo.username}}</view>
+      </view>
+    </view>
+  </view>
+  <view class="content-area">
+    <view class="function-section">
+      <view class="section-title">功能服务</view>
+      <view class="function-item" bindtap="viewFavorites">
+        <view class="function-icon heart-icon">
+          <text class="heart-icon-text">❤</text>
+        </view>
+        <view class="function-content">
+          <view class="function-name">我的收藏</view>
+          <view class="function-desc">查看我收藏的场所</view>
+        </view>
+        <view class="arrow-icon">></view>
+      </view>
+      <view class="function-item">
+        <button open-type="contact">
+          <view class="function-icon help-icon">
+            <image src="/images/客服.png" mode="aspectFill" class="function-icon-img"></image>
+          </view>
+          <view class="function-content">
+            <view class="function-name">反馈帮助</view>
+            <view class="function-desc">有问题需要解决</view>
+          </view>
+          <view class="arrow-icon">></view>
+        </button>
+      </view>
+      <view class="function-item" bindtap="viewAbout">
+        <view class="function-icon about-icon">
+          <image src="/images/关于我们.png" mode="aspectFill" class="function-icon-img"></image>
+        </view>
+        <view class="function-content">
+          <view class="function-name">关于我们</view>
+          <view class="function-desc">了解更多</view>
+        </view>
+        <view class="arrow-icon">></view>
+      </view>
+    </view>
+  </view>
+  <view class="version-section">
+    <view class="version-text">彩虹助手2026</view>
+  </view>
+  <view class="modal-mask" wx:if="{{showNicknameModal}}">
+    <view class="modal-container">
+      <view class="modal-card">
+        <view class="modal-header">
+          <view class="modal-title">{{modalTitle}}</view>
+          <view class="modal-hint-text" wx:if="{{modalHint}}">{{modalHint}}</view>
+          <view class="avatar-wrapper">
+            <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar"></button>
+            <view class="avatar-image-container" wx:if="{{tempAvatar || (userInfo && userInfo.avatarUrl)}}">
+              <image
+                class="modal-avatar-img"
+                src="{{modalAvatarSrc || tempAvatar}}"
+                mode="aspectFill"
+                lazy-load="{{false}}"
+                bindload="onModalAvatarLoad"
+                binderror="onModalAvatarError"
+              />
+              <view class="modal-avatar-error-mask" wx:if="{{modalAvatarLoadFailed}}" catchtap="retryRemoteAvatar" data-from="modal">
+                <text>重试</text>
+              </view>
+              <text class="upload-avatar-text">上传头像</text>
+            </view>
+            <view class="modal-avatar-placeholder" wx:else>
+              <view class="male-silhouette"></view>
+              <text class="placeholder-text">上传头像</text>
+            </view>
+          </view>
+        </view>
+        <view class="modal-body">
+          <view class="input-section-compact">
+            <button class="wechat-nickname-btn-small" bindtap="focusNickname">微信昵称</button>
+            <input class="nickname-input-small" type="nickname" placeholder="在这里输入昵称" value="{{tempNickname}}" bindinput="onNicknameInput" bindblur="onNicknameBlur" focus="{{nicknameFocus}}" />
+          </view>
+          <view class="wechat-nickname-section">
+            <view class="wechat-tip">提示：设置头像与昵称后即可完成登录</view>
+          </view>
+        </view>
+        <view class="modal-actions">
+          <view class="action-btn cancel-btn" bindtap="cancelNickname">取消</view>
+          <view class="action-btn confirm-btn" bindtap="confirmNickname">保存</view>
+        </view>
+        <view class="modal-footer" wx:if="{{userInfo}}">
+          <view class="logout-link" bindtap="handleLogout">退出登录</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <custom-tab-bar></custom-tab-bar>
+</view>

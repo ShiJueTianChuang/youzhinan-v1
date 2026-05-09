@@ -1,0 +1,289 @@
+<view class="manage-container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-left" bindtap="goBack">
+      <text class="nav-back-icon">〈</text>
+    </view>
+    <view class="nav-title">信息管理</view>
+    <view class="nav-right"></view>
+  </view>
+
+  <scroll-view class="content" scroll-y="true">
+    <form class="info-form">
+      <!-- 基本信息 -->
+      <view class="form-section">
+        <view class="section-title">基本信息</view>
+        
+        <view class="form-item">
+          <text class="item-label">名称 *</text>
+          <input 
+            class="item-input" 
+            type="text" 
+            placeholder="请输入名称"
+            value="{{formData.store_name}}"
+            bindinput="onNameInput"
+            maxlength="100"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="item-label">类型 *</text>
+          <view class="type-selector">
+            <view 
+              class="type-option {{formData.category === '酒吧' ? 'active' : ''}}"
+              bindtap="onTypeSelect"
+              data-type="酒吧"
+            >酒吧</view>
+            <view 
+              class="type-option {{formData.category === '民宿' ? 'active' : ''}}"
+              bindtap="onTypeSelect"
+              data-type="民宿"
+            >民宿</view>
+            <view 
+              class="type-option {{formData.category === '公园' ? 'active' : ''}}"
+              bindtap="onTypeSelect"
+              data-type="公园"
+            >公园</view>
+            <view 
+              class="type-option {{formData.category === '其他' ? 'active' : ''}}"
+              bindtap="onTypeSelect"
+              data-type="其他"
+            >其他</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 地址信息 -->
+      <view class="form-section">
+        <view class="section-title">地址信息</view>
+        
+        <view class="form-item">
+          <text class="item-label">省份 *</text>
+          <input 
+            class="item-input" 
+            type="text" 
+            placeholder="请输入省份"
+            value="{{formData.province}}"
+            bindinput="onProvinceInput"
+            maxlength="50"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="item-label">城市 *</text>
+          <input 
+            class="item-input" 
+            type="text" 
+            placeholder="请输入城市"
+            value="{{formData.city}}"
+            bindinput="onCityInput"
+            maxlength="50"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="item-label">区县 *</text>
+          <input 
+            class="item-input" 
+            type="text" 
+            placeholder="请输入区县"
+            value="{{formData.district}}"
+            bindinput="onDistrictInput"
+            maxlength="50"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="item-label">详细地址 *</text>
+          <input 
+            class="item-input" 
+            type="text" 
+            placeholder="请输入详细地址"
+            value="{{formData.address}}"
+            bindinput="onAddressInput"
+            maxlength="1000"
+          />
+        </view>
+      </view>
+
+      <!-- 图片上传 -->
+      <view class="form-section">
+        <view class="section-title">图片上传</view>
+        
+        <!-- 图片上传选项 -->
+        <view class="upload-options">
+          <button 
+            type="button" 
+            class="image-upload-option-btn {{uploadOption === 'upload' ? 'active' : ''}}" 
+            data-option="upload"
+            bindtap="handleOptionButtonClick"
+          >本地上传</button>
+          <button 
+            type="button" 
+            class="image-upload-option-btn {{uploadOption === 'library' ? 'active' : ''}}" 
+            data-option="library"
+            bindtap="handleOptionButtonClick"
+          >图片库选择</button>
+        </view>
+        
+        <!-- 本地上传区域 -->
+        <view wx:if="{{uploadOption === 'upload'}}" class="upload-area">
+          <view 
+            class="upload-placeholder {{previewImage ? 'has-image' : ''}}"
+            bindtap="chooseLocalImage"
+          >
+            <image wx:if="{{previewImage}}" class="preview-image" src="{{previewImage}}" mode="aspectFit"></image>
+            <view wx:else class="upload-hint">
+              <text class="upload-icon">📷</text>
+              <text class="upload-text">点击选择图片</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 图片库选择区域 -->
+        <view wx:elif="{{uploadOption === 'library'}}" class="library-area">
+          <view class="library-hint">
+            <text class="hint-text">点击按钮从图片库选择</text>
+          </view>
+          <button class="open-library-btn" bindtap="openImageLibraryModal">
+            <text>打开图片库</text>
+          </button>
+        </view>
+      </view>
+
+      <!-- 联系方式 -->
+      <view class="form-section">
+        <view class="section-title">联系方式</view>
+        
+        <view class="form-item">
+          <text class="item-label">联系方式</text>
+          <input 
+            class="item-input" 
+            type="text" 
+            placeholder="请输入联系方式"
+            value="{{formData.contact}}"
+            bindinput="onContactInput"
+            maxlength="100"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="item-label">营业时间</text>
+          <input 
+            class="item-input" 
+            type="text" 
+            placeholder="请输入营业时间"
+            value="{{formData.business_hours}}"
+            bindinput="onBusinessHoursInput"
+            maxlength="200"
+          />
+        </view>
+      </view>
+
+      <!-- 其他信息 -->
+      <view class="form-section">
+        <view class="section-title">其他信息</view>
+        
+        <view class="form-item">
+          <text class="item-label">价格</text>
+          <input 
+            class="item-input" 
+            type="number" 
+            placeholder="请输入价格"
+            value="{{formData.price}}"
+            bindinput="onPriceInput"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="item-label">纬度</text>
+          <input 
+            class="item-input" 
+            type="number" 
+            placeholder="请输入纬度"
+            value="{{formData.latitude}}"
+            bindinput="onLatitudeInput"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="item-label">经度</text>
+          <input 
+            class="item-input" 
+            type="number" 
+            placeholder="请输入经度"
+            value="{{formData.longitude}}"
+            bindinput="onLongitudeInput"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="item-label">评分</text>
+          <input 
+            class="item-input" 
+            type="number" 
+            placeholder="请输入评分(1-100)"
+            value="{{formData.rating}}"
+            bindinput="onRatingInput"
+            maxlength="3"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="item-label">描述</text>
+          <textarea 
+            class="item-textarea" 
+            placeholder="请输入描述信息"
+            value="{{formData.description}}"
+            bindinput="onDescriptionInput"
+            maxlength="5000"
+            auto-height
+          />
+        </view>
+      </view>
+
+      <!-- 提交按钮 -->
+      <view class="form-actions">
+        <button 
+          class="submit-btn {{!isFormValid ? 'disabled' : ''}}"
+          bindtap="submitForm"
+          disabled="{{!isFormValid}}"
+        >
+          {{isEditing ? '更新信息' : '提交信息'}}
+        </button>
+      </view>
+    </form>
+  </scroll-view>
+</view>
+
+<!-- 图片库模态框 -->
+<view wx:if="{{showImageLibraryModal}}" class="modal-mask" bindtap="closeImageLibraryModal">
+  <view class="modal-container" catchtap="preventEvent">
+    <view class="modal-header">
+      <text class="modal-title">选择图片</text>
+      <text class="modal-close" bindtap="closeImageLibraryModal">✕</text>
+    </view>
+    
+    <scroll-view class="image-library" scroll-y="true">
+      <view class="library-grid">
+        <view 
+          class="library-item"
+          wx:for="{{imageLibrary}}"
+          wx:key="index"
+          bindtap="selectLibraryImage"
+          data-image="{{item}}"
+        >
+          <image class="library-image" src="{{item}}" mode="aspectFill"></image>
+        </view>
+      </view>
+      
+      <view wx:if="{{imageLibrary.length === 0}}" class="empty-library">
+        <text class="empty-text">图片库为空</text>
+      </view>
+    </scroll-view>
+    
+    <view class="modal-actions">
+      <button class="modal-btn cancel" bindtap="closeImageLibraryModal">取消</button>
+    </view>
+  </view>
+</view>

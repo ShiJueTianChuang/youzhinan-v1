@@ -1,0 +1,104 @@
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-left" bindtap="goBack">
+      <text class="nav-back-icon">〈</text>
+    </view>
+    <view class="nav-title">信息管理</view>
+    <view class="nav-right"></view>
+  </view>
+
+  <!-- 搜索和筛选栏 -->
+  <view class="search-filter-bar">
+    <input 
+      class="search-input" 
+      type="text" 
+      placeholder="搜索信息" 
+      value="{{searchKeyword}}"
+      bindinput="onSearchInput"
+      bindconfirm="onSearchConfirm"
+    />
+    <button class="search-btn" bindtap="onSearchConfirm">搜索</button>
+  </view>
+
+  <!-- 分类筛选 -->
+  <view class="category-filter">
+    <scroll-view scroll-x="true" class="category-scroll">
+      <view 
+        class="category-item {{selectedCategory === '' ? 'active' : ''}}"
+        bindtap="onCategorySelect"
+        data-category=""
+      >全部</view>
+      <view 
+        class="category-item {{selectedCategory === item ? 'active' : ''}}"
+        wx:for="{{categories}}"
+        wx:key="index"
+        bindtap="onCategorySelect"
+        data-category="{{item}}"
+      >{{item}}</view>
+    </scroll-view>
+  </view>
+
+  <!-- 信息列表 -->
+  <scroll-view class="info-list" scroll-y="true">
+    <view wx:if="{{infos.length === 0}}" class="empty-list">
+      <text class="empty-text">{{loading ? '加载中...' : '暂无信息数据'}}</text>
+    </view>
+    <view wx:else>
+      <view class="info-item" wx:for="{{infos}}" wx:key="id">
+        <view class="info-header">
+          <view class="info-name">{{item.store_name}}</view>
+          <view class="info-category">{{item.category}}</view>
+        </view>
+        <view class="info-content">
+          <view class="info-address">{{item.province}} {{item.city}} {{item.district}} {{item.address}}</view>
+          <view class="info-contact" wx:if="{{item.contact}}">联系方式: {{item.contact}}</view>
+        </view>
+        <view class="info-actions">
+          <button class="action-btn edit-btn" bindtap="editInfo" data-info="{{item}}">编辑</button>
+          <button class="action-btn delete-btn" bindtap="deleteInfo" data-id="{{item.id}}">删除</button>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 编辑信息弹窗 -->
+<view class="modal-mask" wx:if="{{showEditModal}}">
+  <view class="modal-container" catchtap="preventEvent">
+    <view class="modal-header">
+      <text class="modal-title">编辑信息</text>
+      <text class="modal-close" bindtap="closeEditModal">✕</text>
+    </view>
+    <view class="modal-body">
+      <view class="form-item">
+        <text class="item-label">名称</text>
+        <input 
+          class="item-input" 
+          type="text" 
+          value="{{editInfoInfo.store_name}}"
+          bindinput="onStoreNameInput"
+        />
+      </view>
+      <view class="form-item">
+        <text class="item-label">分类</text>
+        <picker range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
+          <view class="picker-text">{{editInfoInfo.category}}</view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="item-label">联系方式</text>
+        <input 
+          class="item-input" 
+          type="text" 
+          value="{{editInfoInfo.contact}}"
+          bindinput="onContactInput"
+        />
+      </view>
+    </view>
+    <view class="modal-actions">
+      <button class="modal-btn cancel-btn" bindtap="closeEditModal">取消</button>
+      <button class="modal-btn confirm-btn" bindtap="confirmEdit">保存</button>
+    </view>
+  </view>
+</view>

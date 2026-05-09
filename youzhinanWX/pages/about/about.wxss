@@ -1,0 +1,325 @@
+/* 关于页面协议样式 */
+/* 顶部导航栏样式 */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #1E88E5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 30rpx 40rpx;
+  box-sizing: border-box;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-left {
+  position: absolute;
+  left: 30rpx;
+  top: 60%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-right {
+  position: absolute;
+  right: 30rpx;
+  top: 60%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-back-icon {
+  font-size: 18px;
+  line-height: 1;
+  vertical-align: middle;
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.nav-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+  line-height: 1.5;
+  flex: 1;
+  margin-top: 30rpx;
+}
+
+.about-container {
+  height: 100vh;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0;
+  box-sizing: border-box;
+}
+
+/* 内容区域 */
+.content {
+  flex: 1;
+  padding: 30rpx 20rpx;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+}
+
+/* 切换按钮区域 */
+.tab-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-top: 30rpx;
+  margin-bottom: 30rpx;
+  padding: 0;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26rpx 30rpx;
+  background: #fff;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.tab-btn:active {
+  transform: scale(0.98);
+}
+
+.tab-btn.active {
+  color: #fff;
+  background: linear-gradient(135deg, #1E88E5 0%, #42A5F5 100%);
+  border-color: #1E88E5;
+  box-shadow: 0 4rpx 12rpx rgba(30, 136, 229, 0.3);
+  font-weight: 600;
+}
+
+.tab-btn.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shine 0.5s ease;
+}
+
+@keyframes shine {
+  to {
+    left: 100%;
+  }
+}
+
+/* 使用说明区域 */
+.usage-section {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  margin-top: 20rpx;
+  margin-bottom: 60rpx;
+}
+
+/* 使用说明标题 */
+.usage-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20rpx;
+  line-height: 1.5;
+}
+
+/* 使用说明描述 */
+.usage-description {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 30rpx;
+  text-align: justify;
+}
+
+/* 使用步骤容器 */
+.usage-steps {
+  margin-top: 20rpx;
+}
+
+/* 步骤标题 */
+.usage-step-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+  margin: 20rpx 0 10rpx 0;
+  padding-left: 10rpx;
+}
+
+/* 步骤内容 */
+.usage-step-content {
+  display: block;
+  font-size: 28rpx;
+  color: #555;
+  line-height: 1.6;
+  margin: 10rpx 0;
+  padding-left: 20rpx;
+  text-align: justify;
+}
+
+/* 步骤子项 */
+.usage-step-sub {
+  display: block;
+  font-size: 26rpx;
+  color: #777;
+  line-height: 1.6;
+  margin: 5rpx 0;
+  padding-left: 40rpx;
+}
+
+/* 协议区域 */
+.protocol-section {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  margin-top: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+/* 协议标题 */
+.protocol-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  margin-bottom: 30rpx;
+  line-height: 1.5;
+}
+
+/* 协议日期 */
+.protocol-date {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  text-align: center;
+  margin-bottom: 10rpx;
+}
+
+/* 协议内容 */
+.protocol-content {
+  margin-top: 20rpx;
+}
+
+/* 协议章节标题 */
+.protocol-section-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin: 30rpx 0 20rpx 0;
+  padding-left: 10rpx;
+}
+
+/* 协议子标题 */
+.protocol-subtitle {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #555;
+  margin: 20rpx 0 15rpx 0;
+  padding-left: 10rpx;
+}
+
+/* 协议条目 */
+.protocol-item {
+  display: block;
+  font-size: 28rpx;
+  color: #555;
+  line-height: 1.6;
+  margin: 10rpx 0;
+  padding-left: 20rpx;
+  text-align: justify;
+}
+
+/* Markdown解析样式 */
+.content-h1 {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin: 30rpx 0 20rpx 0;
+  line-height: 1.4;
+}
+
+.content-h2 {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #444;
+  margin: 25rpx 0 15rpx 0;
+  line-height: 1.4;
+}
+
+.content-list {
+  display: flex;
+  margin: 10rpx 0;
+  line-height: 1.6;
+  align-items: flex-start;
+}
+
+.list-bullet {
+  font-size: 28rpx;
+  color: #1E88E5;
+  margin-right: 12rpx;
+  margin-top: 4rpx;
+  flex-shrink: 0;
+}
+
+.list-content {
+  font-size: 28rpx;
+  color: #555;
+  flex: 1;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+.content-p {
+  display: block;
+  font-size: 28rpx;
+  color: #555;
+  line-height: 1.6;
+  margin: 15rpx 0;
+  text-align: justify;
+}
+
+.content-br {
+  height: 20rpx;
+}
+
+.usage-content, .protocol-content {
+  line-height: 1.6;
+}

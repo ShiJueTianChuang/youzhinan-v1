@@ -1,0 +1,145 @@
+<view class="container">
+  <!-- 顶部蓝色背景区域 -->
+  <view class="top-blue-background">
+    <!-- 水波纹效果 -->
+    <view class="wave-layer wave1"></view>
+    <view class="wave-layer wave2"></view>
+    <view class="wave-layer wave3"></view>
+    
+    <!-- 搜索栏 -->
+    <view class="custom-navbar" style="padding-top: {{searchBarTop}}px; padding-right: {{searchBarRight}}px;">
+      <view class="search-container" style="height: {{searchBarHeight}}px;">
+        <input 
+          class="search-input" 
+          placeholder="搜索省份、城市..."
+          bindinput="onSearchInput"
+          bindconfirm="onSearchConfirm"
+          value="{{searchText}}"
+          confirm-type="search"
+        />
+        <view class="search-btn" bindtap="onSearchConfirm">
+          <text class="search-btn-icon">🔍</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主体内容区域 -->
+  <view class="content-area">
+    <!-- 地址簿 (常驻显示) -->
+    <view class="address-book">
+      <!-- 省份选择 -->
+      <view class="selector-section">
+        <view class="selector-title">选择省份 ({{provinces.length}})</view>
+        <scroll-view class="province-scroll" scroll-x="true" show-scrollbar="false">
+          <view class="province-item {{selectedProvince === item ? 'active' : ''}}"
+                wx:for="{{provinces}}"
+                wx:key="index"
+                bindtap="selectProvince"
+                data-province="{{item}}">
+            {{item}}
+          </view>
+          <view class="empty-hint" wx:if="{{provinces.length === 0 && dataLoaded && !loadError}}">
+            暂无省份数据
+          </view>
+          <view class="loading-hint" wx:if="{{!dataLoaded && !loadError}}">
+            <view class="spinner"></view>
+            <text>正在连接服务器...</text>
+          </view>
+          <view class="loading-hint loading-hint--error" wx:if="{{!dataLoaded && loadError}}">
+            <text class="loading-error-title">你访问的页面飞走了</text>
+            <text class="loading-error-desc">{{errorMessage || '网络异常，稍后重试，或搜索“有指南”小程序'}}</text>
+            <view class="loading-retry-btn" bindtap="retryFetchData">重新连接</view>
+          </view>
+        </scroll-view>
+      </view>
+      
+      <!-- 城市选择 -->
+      <view class="selector-section" wx:if="{{selectedProvince}}">
+        <view class="selector-title">选择城市 ({{cities.length}}个)</view>
+        <scroll-view class="city-scroll" scroll-x="true" show-scrollbar="false">
+          <view class="city-item {{selectedCity === item ? 'active' : ''}}" 
+                wx:for="{{cities}}" 
+                wx:key="index"
+                bindtap="selectCity" 
+                data-city="{{item}}">
+            {{item}}
+          </view>
+        </scroll-view>
+      </view>
+      
+      <!-- 分类选择 -->
+      <view class="selector-section" wx:if="{{categories.length > 0}}">
+        <view class="selector-title">选择分类 ({{categories.length}}个)</view>
+        <scroll-view class="category-scroll" scroll-x="true" show-scrollbar="false">
+          <view 
+            class="category-item {{selectedCategory === item ? 'active' : ''}}" 
+            wx:for="{{categories}}" 
+            wx:key="index"
+            bindtap="selectCategory"
+            data-category="{{item}}">
+            {{item}}
+          </view>
+        </scroll-view>
+      </view>
+      
+    </view>
+
+    <!-- 结果列表区域 -->
+    <view class="results-container">
+      <!-- 列表标题 (仅在有数据时显示) -->
+      <view class="list-title" wx:if="{{barList.length > 0}}">{{listTitle}}</view>
+
+      <!-- 酒吧列表 (卡片样式) -->
+      <view class="bar-list" wx:if="{{barList.length > 0}}">
+        <view class="bar-item" wx:for="{{barList}}" wx:key="id" bindtap="viewDetail" data-id="{{item.id}}" data-index="{{index}}">
+          <view class="bar-image-container">
+            <image 
+              class="bar-image" 
+              src="{{item.listImage || item.image}}" 
+              mode="aspectFill"
+              lazy-load="{{true}}"
+              webp="{{true}}"
+              binderror="onImageError"
+              data-index="{{index}}"
+            ></image>
+          </view>
+          <view class="bar-info">
+            <view class="bar-name">{{item.name}}</view>
+            <view class="bar-distance" wx:if="{{item.distanceText}}">
+              <text class="distance-text">距您约 {{item.distanceText}}</text>
+            </view>
+            <view class="bar-address" catchtap="toggleAddressExpand" data-index="{{index}}">
+              {{item.address}}
+            </view>
+            <view class="bar-full-address" style="font-size: 20rpx; color: #ccc; margin-top: 5rpx; display: {{item.addressExpanded ? 'block' : 'none'}};">
+              {{item.province}}{{item.city}}{{item.district}}{{item.address}}
+            </view>
+            <view class="bar-meta">
+              <view class="bar-category-tag" wx:if="{{item.categoryType}}">{{item.categoryType}}</view>
+              <view class="favorite-btn-wrapper" catchtap="toggleFavorite" data-index="{{index}}">
+                <button class="favorite-btn {{item.isFavorited ? 'favorited' : ''}}">
+                  {{item.isFavorited ? '❤️' : '🤍'}}
+                </button>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 无搜索结果提示 -->
+      <view class="no-results" wx:if="{{searchText && barList.length === 0}}">
+        <text>未找到与"{{searchText}}"相关的结果</text>
+      </view>
+      
+      <!-- 无数据提示 (非搜索状态) -->
+      <view class="no-data" wx:if="{{!searchText && barList.length === 0 && selectedProvince}}">
+        <text wx:if="{{selectedCity}}">该地区暂无{{selectedCategory}}信息</text>
+        <text wx:else>请选择具体城市或该省份暂无数据</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 自定义tabBar -->
+  <custom-tab-bar></custom-tab-bar>
+</view>

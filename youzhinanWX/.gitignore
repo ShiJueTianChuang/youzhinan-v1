@@ -1,0 +1,25 @@
+# 微信小程序个人配置
+project.private.config.json
+
+# 备份文件
+*(1).*
+
+# 数据库文件
+*.sql
+
+# 日志文件
+*.log
+npm-debug.log*
+
+# 依赖目录
+node_modules/
+
+# 缓存目录
+.cache/
+.temp/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

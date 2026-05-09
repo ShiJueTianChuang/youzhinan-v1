@@ -1,0 +1,52 @@
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-left" bindtap="goBack">
+      <text class="nav-back-icon">〈</text>
+    </view>
+    <view class="nav-title">分类管理</view>
+    <view class="nav-right"></view>
+  </view>
+
+  <!-- 分类列表 -->
+  <scroll-view class="category-list" scroll-y="true">
+    <view wx:if="{{categories.length === 0}}" class="empty-list">
+      <text class="empty-text">{{loading ? '加载中...' : '暂无分类数据'}}</text>
+    </view>
+    <view wx:else>
+      <view class="category-item" wx:for="{{categories}}" wx:key="index">
+        <view class="category-name">{{item}}</view>
+        <view class="category-actions">
+          <button class="action-btn edit-btn" bindtap="editCategory" data-category="{{item}}" data-index="{{index}}">编辑</button>
+          <button class="action-btn delete-btn" bindtap="deleteCategory" data-category="{{item}}" data-index="{{index}}">删除</button>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 编辑分类弹窗 -->
+<view class="modal-mask" wx:if="{{showEditModal}}">
+  <view class="modal-container" catchtap="preventEvent">
+    <view class="modal-header">
+      <text class="modal-title">编辑分类</text>
+      <text class="modal-close" bindtap="closeEditModal">✕</text>
+    </view>
+    <view class="modal-body">
+      <view class="form-item">
+        <text class="item-label">分类名称</text>
+        <input 
+          class="item-input" 
+          type="text" 
+          placeholder="请输入分类名称" 
+          value="{{editCategoryName}}"
+          bindinput="onCategoryNameInput"
+        />
+      </view>
+    </view>
+    <view class="modal-actions">
+      <button class="modal-btn cancel-btn" bindtap="closeEditModal">取消</button>
+      <button class="modal-btn confirm-btn" bindtap="confirmEdit">保存</button>
+    </view>
+  </view>
+</view>

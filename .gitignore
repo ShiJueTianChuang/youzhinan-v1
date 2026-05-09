@@ -1,0 +1,43 @@
+# ===== 敏感文件 =====
+.env
+*.env.local
+
+# ===== 构建产物 =====
+*.apk
+*.aab
+*.dex
+*.class
+build/
+**/build/
+
+# ===== 大文件 =====
+*.zip
+*.tar.gz
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*.iml
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== 依赖 =====
+node_modules/
+
+# ===== 密钥文件 =====
+*.jks
+*.keystore
+local.properties
+config/api_keys.json
+google-services.json
+
+# ===== 日志 =====
+*.log
+
+# ===== 上传目录 =====
+uploads/

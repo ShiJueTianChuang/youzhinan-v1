@@ -1,0 +1,25 @@
+# 依赖
+node_modules/
+
+# 环境配置（包含密钥，绝不能提交）
+.env
+
+# API 密钥文件（绝不能提交）
+config/api_keys.json
+
+# 日志
+*.log
+npm-debug.log*
+
+# 上传目录
+uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

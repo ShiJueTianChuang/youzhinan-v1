@@ -1,0 +1,225 @@
+<!-- home.wxml -->
+
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <!-- 水波纹效果 -->
+    <view class="wave-layer"></view>
+    <view class="wave-layer"></view>
+    <view class="wave-layer"></view>
+    <!-- 站内信：横排图标+文案，与常见导航栏一致 -->
+    <view class="nav-left" bindtap="goToMessages">
+      <view class="message-entry">
+        <!-- 白色矢量信封图标（内联 SVG，不依赖图片素材） -->
+        <view class="message-entry__icon"></view>
+        <text class="message-entry__text">站内信</text>
+        <view class="message-badge" wx:if="{{unreadCount > 0}}">
+          <text class="message-badge__num">{{unreadCount}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="nav-title"></view>
+  </view>
+
+  <!-- 主体内容直接在导航栏下方 -->
+  <view class="main-content">
+    <!-- 切换标签：未选白底、选中蓝块；图标形状区分三项（灰/白，无彩色） -->
+    <view class="tab-bar">
+      <view class="tab-item tab-item--stacked {{activeTab === 'new' ? 'active' : ''}}"
+            data-tab="new"
+            bindtap="switchTab">
+        <view class="tab-item__icon tab-item__icon--new"></view>
+        <text class="tab-text">新发现</text>
+        <text class="tab-sub">全新收录</text>
+      </view>
+      <view class="tab-item tab-item--stacked {{activeTab === 'hot' ? 'active' : ''}}"
+            data-tab="hot"
+            bindtap="switchTab">
+        <view class="tab-item__icon tab-item__icon--hot"></view>
+        <text class="tab-text">高评分</text>
+        <text class="tab-sub">满分精选</text>
+      </view>
+      <view class="tab-item tab-item--stacked {{activeTab === 'nearby' ? 'active' : ''}}"
+            data-tab="nearby"
+            bindtap="switchTab">
+        <view class="tab-item__icon tab-item__icon--nearby"></view>
+        <text class="tab-text">附近</text>
+        <text class="tab-sub">300 公里内</text>
+      </view>
+    </view>
+
+    <!-- 连接服务器提示（「附近」Tab 单独在下面展示，避免一直转圈却看不到「开启定位」） -->
+    <view class="loading-container" wx:if="{{!dataLoaded && !loadError && activeTab !== 'nearby'}}">
+      <view class="spinner"></view>
+      <text class="loading-text">正在连接服务器...</text>
+    </view>
+
+    <!-- 附近：数据未返回时也可先开定位、去搜索 -->
+    <view class="nearby-loading-panel" wx:if="{{activeTab === 'nearby' && !dataLoaded && !loadError}}">
+      <view class="spinner"></view>
+      <text class="nearby-loading-panel__text">正在加载场所数据…</text>
+      <text class="nearby-loading-panel__tip">加载完成后会按距离或同城展示；您可先授权位置</text>
+      <view class="nearby-location-btn" hover-class="nearby-location-btn--hover" hover-stay-time="100" bindtap="requestLocationForNearby">开启定位</view>
+      <view class="nearby-secondary-btn" hover-class="nearby-secondary-btn--hover" bindtap="goToSearchTabFromNearby">去搜索找店</view>
+    </view>
+    <view class="loading-container loading-container--error" wx:if="{{!dataLoaded && loadError}}">
+      <text class="loading-error-title">你访问的页面飞走了</text>
+      <text class="loading-error-desc">{{errorMessage || '网络异常，稍后重试，或搜索“有指南”小程序'}}</text>
+      <view class="loading-retry-btn" bindtap="retryLoadHomeData">重新连接</view>
+    </view>
+
+    <!-- 附近：接口全量数据中 300km 内，需定位，由近到远（非高评分/新发现子集） -->
+    <view wx:if="{{dataLoaded && activeTab === 'nearby'}}">
+      <view class="nearby-location-hint" wx:if="{{!userLocation}}">
+        <text class="nearby-hint-title">查看附近场所需要先授权位置</text>
+        <text class="nearby-hint-desc">展示接口返回的全部场所中，距您 300 公里内的条目（与高评分、新发现两个 Tab 的数据源无关）</text>
+        <view class="nearby-location-btn" hover-class="nearby-location-btn--hover" hover-stay-time="100" bindtap="requestLocationForNearby">开启定位</view>
+        <view class="nearby-secondary-btn" hover-class="nearby-secondary-btn--hover" bindtap="goToSearchTabFromNearby">去搜索找店</view>
+      </view>
+      <!-- 与「开启定位」卡片分隔开；请将 <ad unit-id="..." /> 放在下方 nearby-ad-wrap 内 -->
+      <view class="nearby-ad-wrap" wx:if="{{!userLocation}}"></view>
+      <block wx:else>
+        <view class="section-title-wrap" wx:if="{{nearbyListTitle}}">
+          <text class="section-title">{{nearbyListTitle}}</text>
+        </view>
+        <view class="bar-list" wx:if="{{nearbyList && nearbyList.length > 0}}">
+          <view class="bar-item" wx:for="{{nearbyList}}" wx:key="id" data-index="{{index}}" data-list-type="nearby" bindtap="goToDetail">
+            <view class="item-image-container" wx:if="{{item.image && !item.imageError}}">
+              <image
+                class="item-image"
+                src="{{item.listImage || item.image}}"
+                mode="aspectFill"
+                lazy-load="{{true}}"
+                webp="{{true}}"
+                binderror="onImageError"
+                data-index="{{index}}"
+                data-list-type="nearby"
+              ></image>
+            </view>
+            <view class="item-tag-no-image" wx:else></view>
+            <view class="item-content">
+              <view class="item-name">{{item.name}}</view>
+              <view class="item-distance" wx:if="{{item.distanceText}}">
+                <text class="distance-text" wx:if="{{item.distanceText === '同城'}}">同城</text>
+                <text class="distance-text" wx:else>距您约 {{item.distanceText}}</text>
+              </view>
+              <view class="item-footer">
+                <view class="footer-left">
+                  <view class="item-rating" wx:if="{{item.rating != ''}}">{{item.rating}}</view>
+                  <view class="item-rating no-rating" wx:else>-</view>
+                  <view class="item-category-tag" wx:if="{{item.categoryType}}" catchtap="goToSearchWithCategory" data-category="{{item.categoryType}}" data-list-type="nearby">{{item.categoryType}}</view>
+                </view>
+                <view class="favorite-btn-wrapper" catchtap="toggleFavorite" data-index="{{index}}" data-list-type="nearby">
+                  <view class="favorite-btn {{item.isFavorited ? 'favorited' : ''}}">
+                    {{item.isFavorited ? '❤️' : '🤍'}}
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="no-data" wx:if="{{!nearbyList || nearbyList.length === 0}}">
+          <text>暂无可展示的附近场所</text>
+          <text class="no-data-sub">已优先按约 300 公里内距离展示；无精确坐标时会尝试同城。若仍为空：本地可能暂无资料，或腾讯地图 Key 未在控制台授权小程序。</text>
+          <view class="nearby-empty-actions">
+            <view class="nearby-location-btn nearby-location-btn--outline" hover-class="nearby-location-btn--hover" bindtap="goToSearchTabFromNearby">去搜索找店</view>
+            <view class="nearby-secondary-btn" hover-class="nearby-secondary-btn--hover" bindtap="retryNearbyRefresh">刷新附近</view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 新发现列表 -->
+    <view wx:if="{{dataLoaded && activeTab === 'new'}}">
+      <view class="section-title-wrap" wx:if="{{newDiscoveredList && newListTitle}}">
+        <text class="section-title">{{newListTitle}}</text>
+      </view>
+      <view class="bar-list" wx:if="{{newDiscoveredList && newDiscoveredList.length > 0}}">
+        <view class="bar-item" wx:for="{{newDiscoveredList}}" wx:key="id" data-index="{{index}}" data-list-type="new" bindtap="goToDetail">
+          <view class="item-image-container" wx:if="{{item.image && !item.imageError}}">
+            <image
+              class="item-image"
+              src="{{item.listImage || item.image}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+              webp="{{true}}"
+              binderror="onImageError"
+              data-index="{{index}}"
+              data-list-type="new"
+            ></image>
+          </view>
+          <view class="item-tag-no-image" wx:else></view>
+          <view class="item-content">
+            <view class="item-name">{{item.name}}</view>
+            <view class="item-distance" wx:if="{{item.distanceText}}">
+              <text class="distance-text">距您约 {{item.distanceText}}</text>
+            </view>
+            <view class="item-footer">
+              <view class="footer-left">
+                <view class="item-rating" wx:if="{{item.rating != ''}}">{{item.rating}}</view>
+                <view class="item-rating no-rating" wx:else>-</view>
+                <view class="item-category-tag" wx:if="{{item.categoryType}}" catchtap="goToSearchWithCategory" data-category="{{item.categoryType}}" data-list-type="new">{{item.categoryType}}</view>
+              </view>
+              <view class="favorite-btn-wrapper" catchtap="toggleFavorite" data-index="{{index}}" data-list-type="new">
+                <view class="favorite-btn {{item.isFavorited ? 'favorited' : ''}}">
+                  {{item.isFavorited ? '❤️' : '🤍'}}
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="no-data" wx:if="{{newDiscoveredList && newDiscoveredList.length === 0}}">
+        <text>暂无新发现场所</text>
+      </view>
+    </view>
+
+    <!-- 高评分列表 -->
+    <view wx:if="{{dataLoaded && activeTab === 'hot'}}">
+      <view class="section-title-wrap" wx:if="{{barList && barList.length > 0}}">
+        <text class="section-title">{{listTitle}}</text>
+      </view>
+      <view class="bar-list" wx:if="{{barList && barList.length > 0}}">
+        <view class="bar-item" wx:for="{{barList}}" wx:key="id" data-index="{{index}}" data-list-type="hot" bindtap="goToDetail">
+          <view class="item-image-container" wx:if="{{item.image && !item.imageError}}">
+            <image
+              class="item-image"
+              src="{{item.listImage || item.image}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+              webp="{{true}}"
+              binderror="onImageError"
+              data-index="{{index}}"
+              data-list-type="hot"
+            ></image>
+          </view>
+          <view class="item-tag-no-image" wx:else></view>
+          <view class="item-content">
+            <view class="item-name">{{item.name}}</view>
+            <view class="item-distance" wx:if="{{item.distanceText}}">
+              <text class="distance-text">距您约 {{item.distanceText}}</text>
+            </view>
+            <view class="item-footer">
+              <view class="footer-left">
+                <view class="item-rating" wx:if="{{item.rating != ''}}">{{item.rating}}</view>
+                <view class="item-rating no-rating" wx:else>-</view>
+                <view class="item-category-tag" wx:if="{{item.categoryType}}" catchtap="goToSearchWithCategory" data-category="{{item.categoryType}}" data-list-type="hot">{{item.categoryType}}</view>
+              </view>
+              <view class="favorite-btn-wrapper" catchtap="toggleFavorite" data-index="{{index}}" data-list-type="hot">
+                <view class="favorite-btn {{item.isFavorited ? 'favorited' : ''}}">
+                  {{item.isFavorited ? '❤️' : '🤍'}}
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="no-data" wx:if="{{barList && barList.length === 0}}">
+        <text>暂无高评分场所</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 自定义tabBar -->
+  <custom-tab-bar></custom-tab-bar>
+</view>
